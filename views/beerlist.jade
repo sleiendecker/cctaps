@@ -1,0 +1,17 @@
+extends layout
+
+block content
+  table(border='1')
+      thead
+        tr
+          th Name
+          th ABV
+          th Rating
+          th Styles
+      tbody
+        each beer, i in beerlist
+          tr
+            td= beer.name
+            td= beer.abv
+            td= beer.ratings.baRating
+            td= beer.styles
