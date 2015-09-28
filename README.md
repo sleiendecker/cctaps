@@ -39,7 +39,7 @@ sudo mongod
 From the root of the repo, load sample data into the db.
 ```unix
 cd /path/to/cctaps
-mongorestore dump/cctaps
+mongorestore dump/cctaps/
 ```
 Start cctaps and go to localhost:3000/beerlist to see all the beers in your database.
 ```unix
