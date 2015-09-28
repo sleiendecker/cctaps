@@ -48,7 +48,5 @@ npm start
 
 
 ## Many Thanks
-* Beer Advocate
 * Untappd
-* RateBeer
-* Max's Taphouse
+* node-untapped
