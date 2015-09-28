@@ -6,8 +6,48 @@
 // Imports
 var UntappdClient = require("./node_modules/node-untappd/UntappdClient",false);
 
-var keys = require("./untappd_keys")
-console.log(keys.clientId);
+var keys = require("./untappd_keys");
+
+// Mongo
+// Retrieve
+var MongoClient = require('mongodb').MongoClient;
+
+// Connect to the db
+MongoClient.connect("mongodb://localhost:27017/cctaps", function(err, db) {
+  if(!err) {
+    console.log("We are connected");
+    var collection = db.collection('beers');
+  	var beer1 = {
+    "name" : "Allgash Whitest",
+    "abv" : 4.9000000000000004,
+    "styles" : [ 
+        "belgian", 
+        "white", 
+        "wheat", 
+        "witbier"
+    ],
+    "ratings" : {
+        "brosRating" : 88.0000000000000000,
+        "baRating" : 82.0000000000000000,
+        "untappedRating" : 80.0000000000000000,
+        "rateBeerRating" : 55.0000000000000000
+    }
+}
+  	// var doc2 = {'hello':'doc2'};
+  	// var lotsOfDocs = [{'hello':'doc3'}, {'hello':'doc4'}];
+
+  	collection.insert(beer1);
+
+  	// collection.insert(doc2, {w:1}, function(err, result) {});
+
+  // collection.insert(lotsOfDocs, {w:1}, function(err, result) {});
+  }
+});
+
+
+
+var insert_beer = function(err, db)
+
 
 // Definitions
 

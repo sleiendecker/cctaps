@@ -32,3 +32,6 @@ node_modules
 
 # Untappd keys
 untappd_keys.js
+
+# Sources
+scripts/sources.js
