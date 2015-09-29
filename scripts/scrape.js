@@ -3,18 +3,18 @@ request		 	= require('request'),
 bar 				= require('./sources.js'),
 bars        = bar.bars;
 
-bars.forEach(function (bar) {
-  request(bar.url, function (err, res, body) {
-    $ = cheerio.load(body);
-    console.log('\n\n***On tap at ' + bar.name + '***\n');
-    $.load(bar.css);
-    beers = $(bar.css);
-    console.log(beers.length);
-    $(beers).each(function (i, beer) {
-      console.log($(beer).text());
-    });
-  });
-});
 
+var get_list = function(){
+	bars.forEach(function (bar) {
+	  request(bar.url, function (err, res, body) {
+	    $ = cheerio.load(body);
+	    beers = $(bar.css);
+	    console.log('\n\n***' + beers.length + ' beers at ' + bar.name + '***\n');
+	    $(beers).each(function (i, beer) {
+	      console.log((i+1) + ". " + $(beer).text());
+	    });
+	  });
+	});
+}
 
- function foobar(el) { setTimeout(function() { foobar_cont(el); }, 5000); }
+// module.exports = get_list;

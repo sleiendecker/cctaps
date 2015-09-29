@@ -7,11 +7,13 @@ block content
           th Name
           th ABV
           th Rating
-          th Styles
+          th Style
+          th Description
       tbody
         each beer, i in beerlist
           tr
             td= beer.name
             td= beer.abv
-            td= beer.ratings.baRating
-            td= beer.styles[0]
+            td= beer.rating
+            td= beer.style
+            td= beer.description
