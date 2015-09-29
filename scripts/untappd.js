@@ -32,24 +32,26 @@ var add_beer = function(beer){
 			var beers = res.beers.items;
 
 			console.log("Found " + beers.length + " beers.")
-			var first = beers[0].beer;
-			var db_beer = {
-				'name' : first.beer_name,
-				'abv' : first.beer_abv,
-				'style' : first.beer_style,
-				"rating" : 88,
-				"description" : first.beer_description
+			
+			if (typeof beers[0] !== 'undefined' && beers[0]) {
+				var first = beers[0].beer;
+				var db_beer = {
+					'name' : first.beer_name,
+					'abv' : first.beer_abv,
+					'style' : first.beer_style,
+					"rating" : 88,
+					"description" : first.beer_description
+				}
+				var MongoClient = require('mongodb').MongoClient;    
+				MongoClient.connect("mongodb://localhost:27017/cctaps", function(err, db) {
+		  	if(!err) {
+		    	console.log("We are connected");
+		    	var collection = db.collection('beers');
+		    	console.log("Adding " + db_beer + " to the collection");
+		  		collection.insert(db_beer);
+		  		}
+				});
 			}
-			var MongoClient = require('mongodb').MongoClient;    
-			MongoClient.connect("mongodb://localhost:27017/cctaps", function(err, db) {
-	  	if(!err) {
-	    	console.log("We are connected");
-	    	var collection = db.collection('beers');
-	    	console.log("Adding " + db_beer + " to the collection");
-	  		collection.insert(db_beer);
-	  		}
-			});
-
 		}
 		else {
 			console.log(err,obj);
