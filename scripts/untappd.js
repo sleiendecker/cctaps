@@ -3,7 +3,7 @@ var UntappdClient = require("../node_modules/node-untappd/UntappdClient",false);
 var MongoClient = require('mongodb').MongoClient;    
 var fs = require('fs');
 var util = require('util');
-var keys = require("./keys/untappd_keys");
+var keys = require("/keys");
 var scrape = require("./scrape");
 
 
