@@ -11,9 +11,7 @@ var scrape = require("./scrape");
 var cheerio = require('cheerio'),
 request		 	= require('request'),
 bar 				= require('./sources.js'),
-bars        = bar.bars;
-
-
+bars        = bar.bars	 ;
 
 // Set to true if you want to see all sort of nasty output on stdout.
 var debug = false;
@@ -28,19 +26,14 @@ var add_beer = function(beer){
 	untappd.searchBeer(function(err,obj){
 		if (debug) console.log(err,obj);
 		if (obj && obj.response) {
-			var res = obj.response;
-			var beers = res.beers.items;
-
-			console.log("Found " + beers.length + " beers.")
-			
+			var beers = obj.response.beers.items;
 			if (typeof beers[0] !== 'undefined' && beers[0]) {
 				var first = beers[0].beer;
+				// console.log("Adding " + first + " to mongo")
 				var db_beer = {
 					'name' : first.beer_name,
-					'abv' : first.beer_abv,
-					'style' : first.beer_style,
-					"rating" : 88,
-					"description" : first.beer_description
+					'abv' : first.beer_abv + "%",
+					'style' : first.beer_style
 				}
 				var MongoClient = require('mongodb').MongoClient;    
 				MongoClient.connect("mongodb://localhost:27017/cctaps", function(err, db) {
@@ -59,17 +52,14 @@ var add_beer = function(beer){
 	},beer);
 }
 
-
-	bars.forEach(function (bar) {
-	  request(bar.url, function (err, res, body) {
-	    $ = cheerio.load(body);
-	    beers = $(bar.css);
-	    console.log('\n\n***' + beers.length + ' beers at ' + bar.name + '***\n');
-	    $(beers).each(function (i, beer) {
-	      console.log((i+1) + ". " + $(beer).text());
-	      add_beer($(beer).text());
-	    });
-	  });
-	});
-
-
+bars.forEach(function (bar) {
+  request(bar.url, function (err, res, body) {
+    $ = cheerio.load(body);
+    beers = $(bar.css);
+    console.log('\n\n***' + beers.length + ' beers at ' + bar.name + '***\n');
+    $(beers).each(function (i, beer) {
+      console.log((i+1) + ". " + $(beer).text());
+      add_beer($(beer).text());
+    });
+  });
+});
