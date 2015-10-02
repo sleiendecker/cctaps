@@ -49,7 +49,7 @@ If you see output similar to the following, it was successful and you should lea
 From the root of the repo, load sample data into the db.
 ```unix
 cd /path/to/cctaps
-mongorestore dump/cctaps/
+mongorestore --host=127.0.0.1 —db cctaps dump/cctaps/
 ```
 Start cctaps and go to localhost:3000/beerlist to see all the beers in your database.
 ```unix
