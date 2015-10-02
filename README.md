@@ -46,7 +46,7 @@ If you see output similar to the following, it was successful and you should lea
 2015-10-01T11:09:54.841-0400 I NETWORK  [initandlisten] connection accepted from 127.0.0.1:60214 #100 (19 connections now open)
 ```
 
-From the root of the repo, load sample data into the db.
+Go to the root of the repo and load the sample data into the db.
 ```unix
 cd /path/to/cctaps
 mongorestore --host=127.0.0.1 —db cctaps dump/cctaps/
