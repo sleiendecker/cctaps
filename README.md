@@ -39,11 +39,11 @@ sudo mongod
 
 If you see output similar to the following, it was successful and you should leave this terminal open.
 ```unix
-2015-10-01T11:09:54.839-0400 I NETWORK  [initandlisten] connection accepted from 127.0.0.1:60210 #96 (15 connections now open)
-2015-10-01T11:09:54.839-0400 I NETWORK  [initandlisten] connection accepted from 127.0.0.1:60211 #97 (16 connections now open)
-2015-10-01T11:09:54.839-0400 I NETWORK  [initandlisten] connection accepted from 127.0.0.1:60212 #98 (17 connections now open)
-2015-10-01T11:09:54.839-0400 I NETWORK  [initandlisten] connection accepted from 127.0.0.1:60213 #99 (18 connections now open)
-2015-10-01T11:09:54.841-0400 I NETWORK  [initandlisten] connection accepted from 127.0.0.1:60214 #100 (19 connections now open)
+2015-10-01T11:09:54.839-0400 I NETWORK  [initandlisten] connection accepted ...
+2015-10-01T11:09:54.839-0400 I NETWORK  [initandlisten] connection accepted ...
+2015-10-01T11:09:54.839-0400 I NETWORK  [initandlisten] connection accepted ...
+2015-10-01T11:09:54.839-0400 I NETWORK  [initandlisten] connection accepted ...
+2015-10-01T11:09:54.841-0400 I NETWORK  [initandlisten] connection accepted ...
 ```
 
 Go to the root of the repo and load the sample data into the db.
