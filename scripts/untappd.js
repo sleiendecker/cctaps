@@ -70,8 +70,9 @@ var callback = function(err, obj) {
 // // // Get Beer
 var add_beer = function(beer){
 	untappd.searchBeer(function(err,obj){
+		if (obj.meta.code == 500){ throw obj.meta.error_detail }
 		if (obj && obj.response) {
-			// console.log("obj: " + JSON.stringify(obj));
+			
 			var beers = obj.response.beers.items;
 			if (typeof beers[0] !== 'undefined' && beers[0]) {
 				var first = beers[0].beer;
