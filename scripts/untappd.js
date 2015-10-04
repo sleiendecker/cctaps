@@ -58,19 +58,43 @@ var callback = function(err, obj) {
 		return db_beer
 	}
 
-// var test_beer = 'Punkin Ale'
 
-// // // Get Beer
-// var add_beer = function(beer){
-// 	callback(untappd.searchBeer(err, obj)), beer);
-// }
+var check_response = function(res){
+	if (res.meta.code == 500){ throw res.meta.error_detail }
+}
 
+var add_to_collection = function(collection_name, data){
+		var MongoClient = require('mongodb').MongoClient;
+		MongoClient.connect("mongodb://localhost:27017/cctaps", function(err, db) {
+			if(!err) {
+  	  	console.log("We are connected");
+  	  	console.log("Adding " + JSON.stringify(data) + " to the " + collection_name + " collection");
+  	  	var collection = db.collection(collection_name);
 
+  			collection.insert(data);
+  			}
+		});
+	}
 
-// // // Get Beer
+var get_collection = function(collection_name, data){
+		var MongoClient = require('mongodb').MongoClient;
+		MongoClient.connect("mongodb://localhost:27017/cctaps", function(err, db) {
+			if(!err) {
+  	  	console.log("Querying: " + collection_name);
+  	  	var collection = db.collection(collection_name);
+  	  	
+  	  	db.collection.find({name : /Harpoon Octoberfest/});
+  			
+  			}
+		});
+	}
+
+// add_to_collection('beers', 'Harpoon Octoberfest');
+
+// Get Beer
 var add_beer = function(beer){
 	untappd.searchBeer(function(err,obj){
-		if (obj.meta.code == 500){ throw obj.meta.error_detail }
+		check_response(obj);
 		if (obj && obj.response) {
 			
 			var beers = obj.response.beers.items;
@@ -82,16 +106,9 @@ var add_beer = function(beer){
 
 				untappd.beerInfo(function(err,obj){
 				if (obj && obj.response) {
-					// console.log("obj: " + JSON.stringify(obj));
-
 					var res = obj.response;
 					var beer = res.beer;
-					var brewery = res.brewery;
-					// console.log("BEER INFO OBJ: " + JSON.stringify(obj));
-					// console.log("beer: " + JSON.stringify(beer));
-					console.log("brewery: " + JSON.stringify(beer.brewery));
-					// console.log("brewery: " + JSON.stringify(brewery));
-
+					
 					var db_beer = {
 						'name' : beer.brewery.brewery_name + "\n|\n" + beer.beer_name,
 						'abv' : beer.beer_abv + "%",
@@ -100,17 +117,9 @@ var add_beer = function(beer){
 					}
 
 				console.log("db_beer: " + JSON.stringify(db_beer));
-
-
-				var MongoClient = require('mongodb').MongoClient;
-				MongoClient.connect("mongodb://localhost:27017/cctaps", function(err, db) {
-		  		if(!err) {
-		  	  	console.log("We are connected");
-		  	  	var collection = db.collection('beers');
-		  	  	console.log("Adding " + db_beer + " to the collection");
-		  			collection.insert(db_beer);
-		  			}
-				});
+				
+				add_to_collection('beers', db_beer)
+				
 				}else {console.log(err,obj);
 			};
 		}, first.bid);
@@ -124,14 +133,16 @@ var add_beer = function(beer){
 
 // Get beer info
 
-bars.forEach(function (bar) {
-  request(bar.url, function (err, res, body) {
-    $ = cheerio.load(body);
-    beers = $(bar.css);
-    console.log('\n\n***' + beers.length + ' beers at ' + bar.name + '***\n');
-    $(beers).each(function (i, beer) {
-      console.log((i+1) + ". " + $(beer).text());
-      add_beer($(beer).text());
-    });
-  });
-});
+// bars.forEach(function (bar) {
+//   request(bar.url, function (err, res, body) {
+//     $ = cheerio.load(body);
+//     beers = $(bar.css);
+//     console.log('\n\n***' + beers.length + ' beers at ' + bar.name + '***\n');
+//     $(beers).each(function (i, beer) {
+//       console.log((i+1) + ". " + $(beer).text());
+//       add_beer($(beer).text());
+//     });
+//   });
+// });
+
+
