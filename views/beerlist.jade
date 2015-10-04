@@ -16,7 +16,8 @@ block content
         each beer, i in beerlist
           tr
             td= i + 1
-            td(a(href=beer.slug)= beer.name
+            td
+              a(href=beer.slug) #{beer.name}
             td= beer.abv
             td= beer.rating
             td= 00
