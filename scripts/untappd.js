@@ -68,7 +68,7 @@ var callback = function(err, obj) {
 
 
 // // // Get Beer
-var add_beer = function(beer){
+var add_beer = function(bar, beer){
 	untappd.searchBeer(function(err,obj){
 		if (obj && obj.response) {
 			// console.log("obj: " + JSON.stringify(obj));
@@ -105,7 +105,10 @@ var add_beer = function(beer){
 				MongoClient.connect("mongodb://localhost:27017/cctaps", function(err, db) {
 		  		if(!err) {
 		  	  	console.log("We are connected");
-		  	  	var collection = db.collection('beers');
+		  	  	// console.log('Adding to bar ' + bar.name)
+		  	  	console.log('Stringified ' + JSON.stringify(bar.name))
+		  	  	db.createCollection(bar.name)
+		  	  	var collection = db.collection(bar.name);
 		  	  	console.log("Adding " + db_beer + " to the collection");
 		  			collection.insert(db_beer);
 		  			}
@@ -119,18 +122,19 @@ var add_beer = function(beer){
 	beer);
 }
 
-add_beer('Punkin');
+// add_beer('Punkin');
 
 // Get beer info
 
-// bars.forEach(function (bar) {
-//   request(bar.url, function (err, res, body) {
-//     $ = cheerio.load(body);
-//     beers = $(bar.css);
-//     console.log('\n\n***' + beers.length + ' beers at ' + bar.name + '***\n');
-//     $(beers).each(function (i, beer) {
-//       console.log((i+1) + ". " + $(beer).text());
-//       add_beer($(beer).text());
-//     });
-//   });
-// });
+bars.forEach(function (bar) {
+	console.log('adding beer to ' + bar)
+  request(bar.url, function (err, res, body) {
+    $ = cheerio.load(body);
+    beers = $(bar.css);
+    console.log('\n\n***' + beers.length + ' beers at ' + bar.name + '***\n');
+    $(beers).each(function (i, beer) {
+      console.log((i+1) + ". " + $(beer).text());
+      add_beer(bar, $(beer).text());
+    });
+  });
+});
