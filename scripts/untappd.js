@@ -21,43 +21,6 @@ var untappd = new UntappdClient(debug);
 untappd.setClientId(keys.clientId);
 untappd.setClientSecret(keys.clientSecret);
 
-var callback = function(err, obj) {
-		if (debug) console.log(err,obj);
-		if (obj && obj.response) {
-			console.log("obj: " + obj);
-			console.log("obj.response: " + obj.response);
-			var beers = obj.response.beers.items;
-			if (typeof beers[0] !== 'undefined' && beers[0]) {
-				var first = beers[0].beer;
-				console.log("\n\nbeer id:" + first.bid);
-				// var id = untappd.beerInfo(first.bid)
-				// console.log(first.bid);
-				var db_beer = {
-					'name' : first.beer_name,
-					'abv' : first.beer_abv + "%",
-					'style' : first.beer_style
-				}
-				
-
-				// var MongoClient = require('mongodb').MongoClient;
-				// MongoClient.connect("mongodb://localhost:27017/cctaps", function(err, db) {
-		  // 	if(!err) {
-		  //   	console.log("We are connected");
-		  //   	var collection = db.collection('beers');
-		  //   	console.log("Adding " + db_beer + " to the collection");
-		  // 		collection.insert(db_beer);
-		  // 		}
-				// });
-			}
-
-		}
-		else {
-			console.log(err,obj);
-		}
-		console.log("db_beer: " + db_beer);
-		return db_beer
-	}
-
 
 var check_response = function(res){
 	if (res.meta.code == 500){ throw res.meta.error_detail }
@@ -76,20 +39,52 @@ var add_to_collection = function(collection_name, data){
 		});
 	}
 
-var get_collection = function(collection_name, data){
-		var MongoClient = require('mongodb').MongoClient;
-		MongoClient.connect("mongodb://localhost:27017/cctaps", function(err, db) {
-			if(!err) {
-  	  	console.log("Querying: " + collection_name);
-  	  	var collection = db.collection(collection_name);
-  	  	
-  	  	db.collection.find({name : /Harpoon Octoberfest/});
-  			
-  			}
-		});
-	}
+// var add_beer = function(collection_name, data){
+// 		var MongoClient = require('mongodb').MongoClient;
+// 		MongoClient.connect("mongodb://localhost:27017/cctaps", function(err, db) {
+// 			if(!err) {
+//   	  	console.log("Querying: " + collection_name);
+//   	  	var collection = db.collection(collection_name);
 
-// add_to_collection('beers', 'Harpoon Octoberfest');
+//   	  	console.log("data: " + data);
+
+//   	  	console.log("DATA: " + JSON.stringify(data));
+//   	  	var name = JSON.stringify(data.name)
+
+//   	  	var beer = name.split("|").pop();
+
+
+//   	  	console.log("NAME: " + JSON.stringify(data.name));
+
+//   	  	// beer = name.substring(name.indexOf("\n|\n") + 1);
+//   	  	console.log("BEER: " + beer);
+
+
+//   	  	// Remove everything before '|' so it's only looking for the beer
+//   	  	// beer = name.substring(name.indexOf("|\n") + 1);
+  	  	
+//   	  	// Regex search beer in case anything is added to beer name (nitro, firkin, year, etc)
+//   	  	collection.find({"name" : new RegExp(beer)}).toArray(function(err, results){
+//    				if (results.length > 0){
+//    					console.log(beer + " is already in the db."); // output all records	
+//    				}else{
+//    					add_to_collection(collection_name, data)
+//    				}
+   				
+
+// 				});
+// 			}
+// 		});
+// 	}
+
+// var db_beer = {
+// 						'name' : 'Southern Tier Brewing Company\n|\nHarvest Ale',
+// 						'abv' : "5%",
+// 						'rating': Math.round(5.23 * 20),
+// 						'style' : 'Ale'
+// 					}
+
+// get_collection('beers', db_beer);
 
 // Get Beer
 var add_beer = function(beer){
@@ -109,11 +104,14 @@ var add_beer = function(beer){
 					var res = obj.response;
 					var beer = res.beer;
 					
+					// console.log('beer resopnse:' + JSON.stringify(beer));
+
 					var db_beer = {
-						'name' : beer.brewery.brewery_name + "\n|\n" + beer.beer_name,
+						'name' : beer.brewery.brewery_name + "|" + beer.beer_name,
 						'abv' : beer.beer_abv + "%",
 						'rating': Math.round(beer.rating_score * 20),
-						'style' : beer.beer_style
+						'style' : beer.beer_style,
+						'slug' : 'http://untappd.com/b/' + beer.beer_slug + "/" + beer.bid
 					}
 
 				console.log("db_beer: " + JSON.stringify(db_beer));
@@ -133,16 +131,16 @@ var add_beer = function(beer){
 
 // Get beer info
 
-// bars.forEach(function (bar) {
-//   request(bar.url, function (err, res, body) {
-//     $ = cheerio.load(body);
-//     beers = $(bar.css);
-//     console.log('\n\n***' + beers.length + ' beers at ' + bar.name + '***\n');
-//     $(beers).each(function (i, beer) {
-//       console.log((i+1) + ". " + $(beer).text());
-//       add_beer($(beer).text());
-//     });
-//   });
-// });
+bars.forEach(function (bar) {
+  request(bar.url, function (err, res, body) {
+    $ = cheerio.load(body);
+    beers = $(bar.css);
+    console.log('\n\n***' + beers.length + ' beers at ' + bar.name + '***\n');
+    $(beers).each(function (i, beer) {
+      console.log((i+1) + ". " + $(beer).text());
+      add_beer($(beer).text());
+    });
+  });
+});
 
 

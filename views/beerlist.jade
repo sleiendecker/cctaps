@@ -7,13 +7,19 @@ block content
           th Num
           th Name
           th ABV
-          th Rating
+          th Untappd
+          th Beer Advocate
+          th Ratebeer
           th Style
+          th Slug
       tbody
         each beer, i in beerlist
           tr
             td= i + 1
-            td= beer.name
+            td(a(href=beer.slug)= beer.name
             td= beer.abv
             td= beer.rating
+            td= 00
+            td= 00
             td= beer.style
+            td= beer.slug
