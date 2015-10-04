@@ -3,7 +3,7 @@ var UntappdClient = require("../node_modules/node-untappd/UntappdClient",false);
 var MongoClient = require('mongodb').MongoClient;    
 var fs = require('fs');
 var util = require('util');
-var keys = require("/keys");
+var keys = require("./keys/untappd_keys.js");
 var scrape = require("./scrape");
 
 
@@ -21,36 +21,104 @@ var untappd = new UntappdClient(debug);
 untappd.setClientId(keys.clientId);
 untappd.setClientSecret(keys.clientSecret);
 
-// // Get Beer
-var add_beer = function(beer){
-	untappd.searchBeer(function(err,obj){
+var callback = function(err, obj) {
 		if (debug) console.log(err,obj);
 		if (obj && obj.response) {
+			console.log("obj: " + obj);
+			console.log("obj.response: " + obj.response);
 			var beers = obj.response.beers.items;
 			if (typeof beers[0] !== 'undefined' && beers[0]) {
 				var first = beers[0].beer;
-				// console.log("Adding " + first + " to mongo")
+				console.log("\n\nbeer id:" + first.bid);
+				// var id = untappd.beerInfo(first.bid)
+				// console.log(first.bid);
 				var db_beer = {
 					'name' : first.beer_name,
 					'abv' : first.beer_abv + "%",
 					'style' : first.beer_style
 				}
-				var MongoClient = require('mongodb').MongoClient;    
-				MongoClient.connect("mongodb://localhost:27017/cctaps", function(err, db) {
-		  	if(!err) {
-		    	console.log("We are connected");
-		    	var collection = db.collection('beers');
-		    	console.log("Adding " + db_beer + " to the collection");
-		  		collection.insert(db_beer);
-		  		}
-				});
+				
+
+				// var MongoClient = require('mongodb').MongoClient;
+				// MongoClient.connect("mongodb://localhost:27017/cctaps", function(err, db) {
+		  // 	if(!err) {
+		  //   	console.log("We are connected");
+		  //   	var collection = db.collection('beers');
+		  //   	console.log("Adding " + db_beer + " to the collection");
+		  // 		collection.insert(db_beer);
+		  // 		}
+				// });
 			}
+
 		}
 		else {
 			console.log(err,obj);
 		}
-	},beer);
+		console.log("db_beer: " + db_beer);
+		return db_beer
+	}
+
+// var test_beer = 'Punkin Ale'
+
+// // // Get Beer
+// var add_beer = function(beer){
+// 	callback(untappd.searchBeer(err, obj)), beer);
+// }
+
+
+
+// // // Get Beer
+var add_beer = function(beer){
+	untappd.searchBeer(function(err,obj){
+		if (obj && obj.response) {
+			// console.log("obj: " + JSON.stringify(obj));
+			var beers = obj.response.beers.items;
+			if (typeof beers[0] !== 'undefined' && beers[0]) {
+				var first = beers[0].beer;
+				console.log("\n\nbeer id:" + first.bid);
+				// var id = untappd.beerInfo(first.bid)
+				
+
+				untappd.beerInfo(function(err,obj){
+				if (obj && obj.response) {
+					// console.log("obj: " + JSON.stringify(obj));
+
+					var res = obj.response;
+					var found = res.beer;
+					// console.log("BEER INFO OBJ: " + JSON.stringify(obj));
+					// console.log("found: " + JSON.stringify(found));
+
+					var db_beer = {
+						'name' : found.beer_name,
+						'abv' : found.beer_abv + "%",
+						'rating': found.rating_score,
+						'style' : found.beer_style
+					}
+
+				console.log("db_beer: " + JSON.stringify(db_beer));
+
+
+				var MongoClient = require('mongodb').MongoClient;
+				MongoClient.connect("mongodb://localhost:27017/cctaps", function(err, db) {
+		  		if(!err) {
+		  	  	console.log("We are connected");
+		  	  	var collection = db.collection('beers');
+		  	  	console.log("Adding " + db_beer + " to the collection");
+		  			collection.insert(db_beer);
+		  			}
+				});
+				}else {console.log(err,obj);
+			};
+		}, first.bid);
+		}
+		}
+	},
+	beer);
 }
+
+// add_beer('Punkin');
+
+// Get beer info
 
 bars.forEach(function (bar) {
   request(bar.url, function (err, res, body) {
