@@ -84,15 +84,18 @@ var add_beer = function(beer){
 					// console.log("obj: " + JSON.stringify(obj));
 
 					var res = obj.response;
-					var found = res.beer;
+					var beer = res.beer;
+					var brewery = res.brewery;
 					// console.log("BEER INFO OBJ: " + JSON.stringify(obj));
-					// console.log("found: " + JSON.stringify(found));
+					// console.log("beer: " + JSON.stringify(beer));
+					console.log("brewery: " + JSON.stringify(beer.brewery));
+					// console.log("brewery: " + JSON.stringify(brewery));
 
 					var db_beer = {
-						'name' : found.beer_name,
-						'abv' : found.beer_abv + "%",
-						'rating': found.rating_score,
-						'style' : found.beer_style
+						'name' : beer.brewery.brewery_name + "\n|\n" + beer.beer_name,
+						'abv' : beer.beer_abv + "%",
+						'rating': Math.round(beer.rating_score * 20),
+						'style' : beer.beer_style
 					}
 
 				console.log("db_beer: " + JSON.stringify(db_beer));
@@ -116,18 +119,18 @@ var add_beer = function(beer){
 	beer);
 }
 
-// add_beer('Punkin');
+add_beer('Punkin');
 
 // Get beer info
 
-bars.forEach(function (bar) {
-  request(bar.url, function (err, res, body) {
-    $ = cheerio.load(body);
-    beers = $(bar.css);
-    console.log('\n\n***' + beers.length + ' beers at ' + bar.name + '***\n');
-    $(beers).each(function (i, beer) {
-      console.log((i+1) + ". " + $(beer).text());
-      add_beer($(beer).text());
-    });
-  });
-});
+// bars.forEach(function (bar) {
+//   request(bar.url, function (err, res, body) {
+//     $ = cheerio.load(body);
+//     beers = $(bar.css);
+//     console.log('\n\n***' + beers.length + ' beers at ' + bar.name + '***\n');
+//     $(beers).each(function (i, beer) {
+//       console.log((i+1) + ". " + $(beer).text());
+//       add_beer($(beer).text());
+//     });
+//   });
+// });
