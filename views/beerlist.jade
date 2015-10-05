@@ -4,7 +4,7 @@ block content
   table(border='1')
       thead
         tr
-          th Num
+          th Label
           th Name
           th ABV
           th Untappd
@@ -15,7 +15,9 @@ block content
         each beer, i in beerlist
           tr
 
-            td= i + 1
+            td
+              //- img(src= "http://" + row.Image)
+              img(src= beer.label, width='50', height='50')
             td= beer.name
             td= beer.abv + "%"
             td 

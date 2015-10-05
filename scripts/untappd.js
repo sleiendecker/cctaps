@@ -111,7 +111,8 @@ var add_beer = function(beer){
             'abv' : Number(beer.beer_abv),
 						'rating': Math.round(beer.rating_score * 20),
 						'style' : beer.beer_style,
-						'slug' : 'http://untappd.com/b/' + beer.beer_slug + "/" + beer.bid
+						'slug' : 'http://untappd.com/b/' + beer.beer_slug + "/" + beer.bid,
+						'label' : beer.beer_label
 					}
 
 				console.log("db_beer: " + JSON.stringify(db_beer));
