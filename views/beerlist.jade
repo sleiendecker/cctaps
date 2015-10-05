@@ -16,10 +16,10 @@ block content
           tr
 
             td= i + 1
-            td
-              a(href=beer.slug) #{beer.name}
+            td= beer.name
             td= beer.abv + "%"
-            td= beer.rating
+            td 
+              a(href=beer.slug) #{beer.rating}
             td= 00
             td= 00
             td= beer.style
