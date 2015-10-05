@@ -1,6 +1,6 @@
 // Imports
 var UntappdClient = require("../node_modules/node-untappd/UntappdClient",false);
-var MongoClient = require('mongodb').MongoClient;    
+var MongoClient = require('mongodb').MongoClient;
 var fs = require('fs');
 var util = require('util');
 var keys = require("./keys/untappd_keys.js");
@@ -62,15 +62,15 @@ var add_to_collection = function(collection_name, data){
 
 //   	  	// Remove everything before '|' so it's only looking for the beer
 //   	  	// beer = name.substring(name.indexOf("|\n") + 1);
-  	  	
+
 //   	  	// Regex search beer in case anything is added to beer name (nitro, firkin, year, etc)
 //   	  	collection.find({"name" : new RegExp(beer)}).toArray(function(err, results){
 //    				if (results.length > 0){
-//    					console.log(beer + " is already in the db."); // output all records	
+//    					console.log(beer + " is already in the db."); // output all records
 //    				}else{
 //    					add_to_collection(collection_name, data)
 //    				}
-   				
+
 
 // 				});
 // 			}
@@ -91,33 +91,33 @@ var add_beer = function(beer){
 	untappd.searchBeer(function(err,obj){
 		check_response(obj);
 		if (obj && obj.response) {
-			
+
 			var beers = obj.response.beers.items;
 			if (typeof beers[0] !== 'undefined' && beers[0]) {
 				var first = beers[0].beer;
 				console.log("\n\nbeer id:" + first.bid);
 				// var id = untappd.beerInfo(first.bid)
-				
+
 
 				untappd.beerInfo(function(err,obj){
 				if (obj && obj.response) {
 					var res = obj.response;
 					var beer = res.beer;
-					
+
 					// console.log('beer resopnse:' + JSON.stringify(beer));
 
 					var db_beer = {
 						'name' : beer.brewery.brewery_name + "|" + beer.beer_name,
-						'abv' : beer.beer_abv + "%",
+            'abv' : Number(beer.beer_abv),
 						'rating': Math.round(beer.rating_score * 20),
 						'style' : beer.beer_style,
 						'slug' : 'http://untappd.com/b/' + beer.beer_slug + "/" + beer.bid
 					}
 
 				console.log("db_beer: " + JSON.stringify(db_beer));
-				
+
 				add_to_collection('beers', db_beer)
-				
+
 				}else {console.log(err,obj);
 			};
 		}, first.bid);
