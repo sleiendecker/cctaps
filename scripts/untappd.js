@@ -45,21 +45,13 @@ var add_to_collection = function(collection_name, data){
 // 			if(!err) {
 //   	  	console.log("Querying: " + collection_name);
 //   	  	var collection = db.collection(collection_name);
-
 //   	  	console.log("data: " + data);
-
 //   	  	console.log("DATA: " + JSON.stringify(data));
 //   	  	var name = JSON.stringify(data.name)
-
 //   	  	var beer = name.split("|").pop();
-
-
 //   	  	console.log("NAME: " + JSON.stringify(data.name));
-
 //   	  	// beer = name.substring(name.indexOf("\n|\n") + 1);
 //   	  	console.log("BEER: " + beer);
-
-
 //   	  	// Remove everything before '|' so it's only looking for the beer
 //   	  	// beer = name.substring(name.indexOf("|\n") + 1);
 
@@ -77,14 +69,6 @@ var add_to_collection = function(collection_name, data){
 // 		});
 // 	}
 
-// var db_beer = {
-// 						'name' : 'Southern Tier Brewing Company\n|\nHarvest Ale',
-// 						'abv' : "5%",
-// 						'rating': Math.round(5.23 * 20),
-// 						'style' : 'Ale'
-// 					}
-
-// get_collection('beers', db_beer);
 
 // Get Beer
 var add_beer = function(beer){
@@ -93,32 +77,27 @@ var add_beer = function(beer){
 		if (obj && obj.response) {
 
 			var beers = obj.response.beers.items;
+			// Add function to evaluate each beer's data.
+			// Return closest match, and ensure they all have a name and abv.
 			if (typeof beers[0] !== 'undefined' && beers[0]) {
 				var first = beers[0].beer;
 				console.log("\n\nbeer id:" + first.bid);
-				// var id = untappd.beerInfo(first.bid)
-
-
 				untappd.beerInfo(function(err,obj){
 				if (obj && obj.response) {
-					var res = obj.response;
-					var beer = res.beer;
-
-					// console.log('beer resopnse:' + JSON.stringify(beer));
-
+					var beer = obj.response.beer;
 					var db_beer = {
 						'name' : beer.brewery.brewery_name + "|" + beer.beer_name,
             'abv' : Number(beer.beer_abv),
+            // Untappd's rating is out of 5.
+            // Multiplying by 20 and rounding so rating style is consistent
 						'rating': Math.round(beer.rating_score * 20),
 						'style' : beer.beer_style,
+						// URL for the beer's untappd page
 						'slug' : 'http://untappd.com/b/' + beer.beer_slug + "/" + beer.bid,
 						'label' : beer.beer_label
 					}
-
-				console.log("db_beer: " + JSON.stringify(db_beer));
-
+				// console.log("db_beer: " + JSON.stringify(db_beer));
 				add_to_collection('beers', db_beer)
-
 				}else {console.log(err,obj);
 			};
 		}, first.bid);
@@ -128,9 +107,6 @@ var add_beer = function(beer){
 	beer);
 }
 
-// add_beer('Punkin');
-
-// Get beer info
 
 bars.forEach(function (bar) {
   request(bar.url, function (err, res, body) {
