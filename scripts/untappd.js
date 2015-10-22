@@ -11,7 +11,7 @@ var scrape = require("./scrape");
 var cheerio = require('cheerio'),
 request		 	= require('request'),
 bar 				= require('./sources.js'),
-bars        = bar.bars	 ;
+bars        = bar.bars;
 
 // Set to true if you want to see all sort of nasty output on stdout.
 var debug = false;
@@ -89,7 +89,7 @@ var add_beer = function(beer){
 						'name' : beer.brewery.brewery_name + "|" + beer.beer_name,
             'abv' : Number(beer.beer_abv),
             // Untappd's rating is out of 5.
-            // Multiplying by 20 and rounding so rating style is consistent
+            // Multiplying by 20 and rounding so rating format is consistent
 						'rating': Math.round(beer.rating_score * 20),
 						'style' : beer.beer_style,
 						// URL for the beer's untappd page
