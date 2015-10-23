@@ -87,7 +87,8 @@ var add_beer = function(beer, bar){
 					var beer = obj.response.beer;
 					var db_beer = {
             'bar' : bar,
-						'name' : beer.brewery.brewery_name + "|" + beer.beer_name,
+						'brewery' : beer.brewery.brewery_name,
+            'name' : beer.beer_name,
             'abv' : Number(beer.beer_abv),
             // Untappd's rating is out of 5.
             // Multiplying by 20 and rounding so rating format is consistent

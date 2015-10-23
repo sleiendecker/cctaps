@@ -1,12 +1,39 @@
 extends layout
 
 block content
-  h1 #{beerlist[0].bar}
+  //- h1 #{beerlist[0].bar}
+  //- table(border="1", class="u-full-width")
+  //-     thead
+  //-       tr
+  //-         th Label
+  //-         th Brewery
+  //-         th Beer
+  //-         th ABV
+  //-         th Untappd
+  //-         th Beer Advocate
+  //-         th Ratebeer
+  //-         th Style
+  //-     tbody
+  //-       each beer, i in beerlist
+  //-         tr
+  //-           td
+  //-             //- img(src= "http://" + row.Image)
+  //-             img(src= beer.label, width='50', height='50')
+  //-           td= beer.brewery
+  //-           td= beer.name
+  //-           td.rating= beer.abv + "%"
+  //-           td.rating 
+  //-             a(href=beer.slug) #{beer.rating}
+  //-           td.rating= 00
+  //-           td.rating= 00
+  //-           td= beer.style
+
+
   table(border="1", class="u-full-width")
       thead
         tr
           th Label
-          th Name
+          th Beer
           th ABV
           th Untappd
           th Beer Advocate
@@ -18,7 +45,7 @@ block content
             td
               //- img(src= "http://" + row.Image)
               img(src= beer.label, width='50', height='50')
-            td= beer.name
+            td= beer.brewery + " | " + beer.name
             td.rating= beer.abv + "%"
             td.rating 
               a(href=beer.slug) #{beer.rating}
