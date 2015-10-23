@@ -3,14 +3,6 @@ var router = express.Router();
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
-  res.render('index', { title: 'Express' });
-});
-
-router.get('/helloworld', function (req, res) {
-  res.render('helloworld', { title: 'Hello Baltimore Resident'});
-});
-
-router.get('/beerlist', function (req, res) {
   var db = req.db;
   var collection = db.get('beers');
   collection.find({}, {}, function (error, docs) {
@@ -18,6 +10,14 @@ router.get('/beerlist', function (req, res) {
       'beerlist': docs
     })
   })
+});
+
+router.get('/helloworld', function (req, res) {
+  res.render('helloworld', { title: 'Hello Baltimore Resident'});
+});
+
+router.get('/express', function (req, res) {
+  res.render('index', { title: 'Express' });
 });
 
 module.exports = router;
