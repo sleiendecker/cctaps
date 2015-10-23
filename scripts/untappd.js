@@ -33,7 +33,7 @@ var add_to_collection = function(collection_name, data){
   	  	console.log("We are connected");
   	  	console.log("Adding " + JSON.stringify(data) + " to the " + collection_name + " collection");
   	  	var collection = db.collection(collection_name);
-
+        console.log('bar name: ' + data.bar);
   			collection.insert(data);
   			}
 		});
@@ -71,7 +71,7 @@ var add_to_collection = function(collection_name, data){
 
 
 // Get Beer
-var add_beer = function(beer){
+var add_beer = function(beer, bar){
 	untappd.searchBeer(function(err,obj){
 		check_response(obj);
 		if (obj && obj.response) {
@@ -86,6 +86,7 @@ var add_beer = function(beer){
 				if (obj && obj.response) {
 					var beer = obj.response.beer;
 					var db_beer = {
+            'bar' : bar,
 						'name' : beer.brewery.brewery_name + "|" + beer.beer_name,
             'abv' : Number(beer.beer_abv),
             // Untappd's rating is out of 5.
@@ -115,7 +116,7 @@ bars.forEach(function (bar) {
     console.log('\n\n***' + beers.length + ' beers at ' + bar.name + '***\n');
     $(beers).each(function (i, beer) {
       console.log((i+1) + ". " + $(beer).text());
-      add_beer($(beer).text());
+      add_beer($(beer, bar.name).text(), bar.name);
     });
   });
 });
