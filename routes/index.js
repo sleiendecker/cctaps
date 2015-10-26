@@ -8,14 +8,15 @@ bars = bar.bars;
 router.get('/', function (req, res, next) {
   // res.render('beerlist', { bar: bars });
   // res.render('bar', { test: "test" });
-  console.log(bars)
-  var db = req.db;
-  var collection = db.get('beers');
-  collection.find({}, {}, function (error, docs) {
-    res.render('beerlist', {
-      'beerlist': docs
-    })
-  })
+  res.render("./../views/index.ejs")
+  // console.log(bars)
+  // var db = req.db;
+  // var collection = db.get('beers');
+  // collection.find({}, {}, function (error, docs) {
+  //   res.render('beerlist', {
+  //     'beerlist': docs
+  //   })
+  // })
 });
 
 router.get('/helloworld', function (req, res) {
