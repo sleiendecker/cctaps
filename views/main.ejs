@@ -1,0 +1,44 @@
+<html class="ui-mobile"><head>
+<!-- <base href="http://demos.jquerymobile.com/1.4.1/listview-grid/listview-grid.html"> -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Listview Responsive Grid</title>
+  
+  <link rel="shortcut icon" href="https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678063-beer-128.png">
+  
+  <link rel="stylesheet" href="http://demos.jquerymobile.com/1.4.1/css/themes/default/jquery.mobile-1.4.1.min.css">
+  
+  <link rel="stylesheet" href="http://demos.jquerymobile.com/1.4.1/listview-grid/listview-grid.css">
+  
+  <script src="http://demos.jquerymobile.com/1.4.1/js/jquery.js"></script>
+  
+  <script src="http://demos.jquerymobile.com/1.4.1/js/jquery.mobile-1.4.1.min.js"></script>
+
+<meta name="chromesniffer" id="chromesniffer_meta" content="{&quot;jQuery&quot;:&quot;1.10.2&quot;,&quot;jQuery UI&quot;:&quot;c0ab71056b936627e8a7821f03c044aec6280a40&quot;}"><script type="text/javascript" src="chrome-extension://homgcnaoacgigpkkljjjekpignblkeae/detector.js"></script></head>
+<body class="ui-mobile-viewport ui-overlay-b">
+<div data-role="page" data-theme="b" id="demo-page" class="my-page ui-page ui-page-theme-b ui-page-active" data-url="demo-page" tabindex="0" style="min-height: 568px;">
+
+  <div data-role="header" role="banner" class="ui-header ui-bar-inherit">
+    <h1 class="ui-title" role="heading" aria-level="1">Charm City Taps</h1>
+  </div><!-- /header -->
+
+  <div role="main" class="ui-content">
+
+        <ul data-role="listview" data-inset="true" class="ui-listview ui-listview-inset ui-corner-all ui-shadow">
+          
+
+          <% for (var i = 0; i < title.length; i++) { %>
+              <li><a href=<%= title[i].name.replace(/\s+/g, '-').toLowerCase();%> class="ui-btn ui-btn-icon-right ui-icon-carat-r">
+              <%= title[i].name%>
+              <p>Baltimore, MD</p>
+              </a></li>
+          <% } %>
+        </ul>
+
+    </div><!-- /content -->
+
+</div><!-- /page -->
+
+
+
+<div class="ui-loader ui-corner-all ui-body-a ui-loader-default"><span class="ui-icon-loading"></span><h1>loading</h1></div></body></html>

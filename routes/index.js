@@ -1,8 +1,8 @@
 var express = require('express');
 var router = express.Router();
 
-var bar = require('../scripts/sources'),
-bars = bar.bars;
+var bar = require('../scripts/sources.js'),
+bars_arr = bar.bars;
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
@@ -26,7 +26,35 @@ router.get('/express', function (req, res) {
   res.render('index', { title: 'Express' });
 });
 
+
+router.get('/main', function (req, res) {
+  res.render('main', { title: bars_arr });
+  // console.log("req " + req);
+  // console.log("res " + res);
+});
+
 router.get('/index', function (req, res) {
+  var db = req.db;
+  var collection = db.get('beers');
+  collection.find({}, {}, function (error, docs) {
+    res.render('index', {
+      'beerlist': docs
+    })
+  })
+});
+
+router.get('/wiley-gunters', function (req, res) {
+  var db = req.db;
+  var collection = db.get('beers');
+  collection.find({}, {}, function (error, docs) {
+    res.render('index', {
+      'beerlist': docs
+    })
+  })
+});
+
+
+router.get('/bar-liquorice', function (req, res) {
   var db = req.db;
   var collection = db.get('beers');
   collection.find({}, {}, function (error, docs) {
