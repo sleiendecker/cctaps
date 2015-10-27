@@ -6,6 +6,8 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <link rel="stylesheet" type="text/css" href='/stylesheets/style.css'>
+        <link rel="stylesheet" type="text/css" href='/stylesheets/normalize.css'>
         <title></title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -17,22 +19,37 @@
             <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
 
-        <!-- Add your site or application content here -->
-        <p>Hello world! This is HTML5 Boilerplate.</p>
-
         <h1><%= beerlist[0].bar %></h1>
+
+        <table border="1", class="u-full-width">
+          <tr>
+            <th>Label</th>
+            <th>Beer</th>
+            <th>ABV</th>
+            <th>Untappd</th>
+            <th>Beer Advocate</th>
+            <th>Ratebeer</th>
+            <th>Style</th>
+          </tr>
+
+          <% for (var i = 0; i < beerlist.length; i++) { %>
+            <tr>
+              <td>
+                <img src=<%= beerlist[i].label %> border='3' height='50' width='50'>
+              </td>
+              <td><%= beerlist[i].name %></td>
+              <td><%= beerlist[i].abv %>%</td>
+              <td><a href= <%= beerlist[i].slug %> ><%= beerlist[i].rating %></a></td>
+              <td>0</td>
+              <td>0</td>
+              <td><%= beerlist[i].style %></td>
+            </tr>    
+          <% } %>
+        </table>
 
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
         <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.10.2.min.js"><\/script>')</script>
 
-        <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->
-        <script>
-            (function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
-            function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
-            e=o.createElement(i);r=o.getElementsByTagName(i)[0];
-            e.src='//www.google-analytics.com/analytics.js';
-            r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
-            ga('create','UA-XXXXX-X');ga('send','pageview');
-        </script>
+
     </body>
 </html>
