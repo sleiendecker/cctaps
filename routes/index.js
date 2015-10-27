@@ -8,7 +8,6 @@ bars = bar.bars;
 router.get('/', function (req, res, next) {
   // res.render('beerlist', { bar: bars });
   // res.render('bar', { test: "test" });
-  // res.render("./../views/index.ejs")
   // console.log(bars)
   var db = req.db;
   var collection = db.get('beers');
@@ -25,6 +24,16 @@ router.get('/helloworld', function (req, res) {
 
 router.get('/express', function (req, res) {
   res.render('index', { title: 'Express' });
+});
+
+router.get('/index', function (req, res) {
+  var db = req.db;
+  var collection = db.get('beers');
+  collection.find({}, {}, function (error, docs) {
+    res.render('index', {
+      'beerlist': docs
+    })
+  })
 });
 
 module.exports = router;
