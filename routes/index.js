@@ -48,7 +48,7 @@ router.get('/index', function (req, res) {
   var db = req.db;
   var collection = db.get('beers');
   collection.find({}, {}, function (error, docs) {
-    res.render('index', {
+    res.render('beerlist', {
       'beerlist': docs
     })
   })
@@ -75,4 +75,18 @@ router.get('/bar-liquorice', function (req, res) {
   })
 });
 
+router.get('/bar/:name', function (req, res) {
+  var db = req.db;
+  var collection = db.get('beers');
+  console.log(req.params.name);
+  collection.find({bar:req.params.name}, {}, function (error, docs) {
+    res.render('index', {
+      'beerlist': docs
+    })
+  })
+});
+
+
 module.exports = router;
+
+
