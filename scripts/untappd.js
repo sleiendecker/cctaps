@@ -94,9 +94,9 @@ function get_info(url, cb){
 }
 
 function get_url(beer_name, cb) {
-  console.log("GET_URL BEER 1: " + beer_name);
+  console.log("Getting url for: " + beer_name);
   ba.beerURL(beer_name, function(url) {
-    console.log("GET_URL BEER 2: " + beer_name);
+    console.log("GET_URL : " + url);
       cb(url);
   });
 }
@@ -129,7 +129,7 @@ function add_beer(name, bar){
   });
 }
 
-// add_beer("Anchor Steam", "Wylie Gunters");
+// add_beer("Anchor Steam", "Maxs");
 
 
 
