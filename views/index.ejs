@@ -23,14 +23,12 @@
       <% for (var i = 0; i < beerlist.length; i++) { %>
 
       <li class="ui-li-has-thumb ui-first-child">
-      <a href= <%= beerlist[i].slug %> class="ui-btn ui-btn-icon-right ui-icon-carat-r">
-        <img src=<%= beerlist[i].label %> class="ui-li-thumb">
+        <h1 class="ui-li-thumb"><%= beerlist[i].rating %></h1>
         <!-- <h1 class="ui-li-thumb"><%= beerlist[i].rating %></h1> -->
           <p><%= beerlist[i].name%></p>
           <p><%= beerlist[i].brewery%></p>
-          <p><%= beerlist[i].style%></p>
-          <p class="ui-li-aside"><%= beerlist[i].rating %></p>
-      </a></li>
+          <p><%= beerlist[i].abv%></p>
+          </li>
       <% } %>
       </ul>
   </div>

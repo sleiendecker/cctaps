@@ -54,27 +54,8 @@ router.get('/index', function (req, res) {
   })
 });
 
-router.get('/wiley-gunters', function (req, res) {
-  var db = req.db;
-  var collection = db.get('beers');
-  collection.find({}, {}, function (error, docs) {
-    res.render('index', {
-      'beerlist': docs
-    })
-  })
-});
 
-
-router.get('/bar-liquorice', function (req, res) {
-  var db = req.db;
-  var collection = db.get('beers');
-  collection.find({}, {}, function (error, docs) {
-    res.render('index', {
-      'beerlist': docs
-    })
-  })
-});
-
+// Dynamic routes
 router.get('/bar/:name', function (req, res) {
   var db = req.db;
   var collection = db.get('beers');
