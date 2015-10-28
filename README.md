@@ -3,7 +3,7 @@ This is the API and website for Charm City Taps.
 
 # Purpose 
 The idea of this app is to neatly display all beers at local Charm City bars in a sortable manner. 
-Sortable fields include Beer Advocate ratings, style, and ABV.
+Sortable fields include ratings, style, and ABV.
 
 
 # Pre-Installation

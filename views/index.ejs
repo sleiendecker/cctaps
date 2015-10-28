@@ -23,12 +23,13 @@
       <% for (var i = 0; i < beerlist.length; i++) { %>
 
       <li class="ui-li-has-thumb ui-first-child">
+        <a href= "http://beeradvocate.com<%= beerlist[i].url %>" class="ui-btn ui-btn-icon-right ui-icon-carat-r">
         <h1 class="ui-li-thumb"><%= beerlist[i].rating %></h1>
         <!-- <h1 class="ui-li-thumb"><%= beerlist[i].rating %></h1> -->
           <p><%= beerlist[i].name%></p>
           <p><%= beerlist[i].brewery%></p>
           <p><%= beerlist[i].abv%></p>
-          </li>
+          </a></li>
       <% } %>
       </ul>
   </div>

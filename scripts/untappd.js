@@ -109,18 +109,15 @@ function add_beer(name, bar){
       if (typeof beer[0] !== 'undefined' && beer[0]) {
         var beer = JSON.parse(beer)[0];
 
-        // Works
-        // console.log("beer: " + JSON.stringify(beer.beer_name));
-        // var test = JSON.stringify(beer.beer_name)
-        console.log("\n\nPARSED" + JSON.stringify(beer));
-
         var db_beer = {
           'bar' : bar,
           'brewery' : beer.brewery_name,
           'name' : beer.beer_name,
           'abv' : beer.beer_abv,
           'rating': beer.ba_score,
-          'style' : beer.beer_style
+          'style' : beer.beer_style,
+          'url': url
+
         }
         console.log("Adding:" + JSON.stringify(db_beer + " to the db"));
         add_to_collection('beers', db_beer)
