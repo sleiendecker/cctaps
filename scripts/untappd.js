@@ -8,7 +8,6 @@ var scrape = require("./scrape");
 
 var ba = require('./ba_api.js');
 
-// scrape.sj imports
 var cheerio = require('cheerio'),
 request		 	= require('request'),
 bar 				= require('./sources.js'),
@@ -23,123 +22,89 @@ untappd.setClientId(keys.clientId);
 untappd.setClientSecret(keys.clientSecret);
 
 
-var check_response = function(res){
-	if (res.meta.code == 500){ throw res.meta.error_detail }
+
+var add_to_collection = function(data){
+	var MongoClient = require('mongodb').MongoClient;
+	MongoClient.connect("mongodb://localhost:27017/cctaps", function(err, db) {
+		if(!err) {
+	  	console.log("We are connected");
+	  	console.log("Adding " + JSON.stringify(data) + " to the beers collection");
+	  	var collection = db.collection("beers");
+      console.log('bar name: ' + data.bar);
+			collection.insert(data);
+			}
+	});
 }
 
-var add_to_collection = function(collection_name, data){
-		var MongoClient = require('mongodb').MongoClient;
-		MongoClient.connect("mongodb://localhost:27017/cctaps", function(err, db) {
-			if(!err) {
-  	  	console.log("We are connected");
-  	  	console.log("Adding " + JSON.stringify(data) + " to the " + collection_name + " collection");
-  	  	var collection = db.collection(collection_name);
-        console.log('bar name: ' + data.bar);
-  			collection.insert(data);
-  			}
-		});
-	}
 
-
-
-// Get Beer
-// var add_beer = function(beer, bar){
-// 	untappd.searchBeer(function(err,obj){
-// 		check_response(obj);
-// 		if (obj && obj.response) {
-
-// 			var beers = obj.response.beers.items;
-// 			// Add function to evaluate each beer's data.
-// 			// Return closest match, and ensure they all have a name and abv.
-// 			if (typeof beers[0] !== 'undefined' && beers[0]) {
-// 				var first = beers[0].beer;
-// 				console.log("\n\nbeer id:" + first.bid);
-// 				untappd.beerInfo(function(err,obj){
-// 				if (obj && obj.response) {
-// 					var beer = obj.response.beer;
-//           console.log("\n\nBEER:\n" + beer);
-// 					var db_beer = {
-//             'bar' : bar,
-// 						'brewery' : beer.brewery.brewery_name,
-//             'name' : beer.beer_name,
-//             'abv' : Number(beer.beer_abv),
-//             // Untappd's rating is out of 5.
-//             // Multiplying by 20 and rounding so rating format is consistent
-// 						'rating': Math.round(beer.rating_score * 20),
-// 						'style' : beer.beer_style,
-// 						// URL for the beer's untappd page
-// 						'slug' : 'http://untappd.com/b/' + beer.beer_slug + "/" + beer.bid,
-// 						'label' : beer.beer_label
-// 					}
-// 				// console.log("db_beer: " + JSON.stringify(db_beer));
-// 				add_to_collection('beers', db_beer)
-// 				}else {console.log(err,obj);
-// 			};
-// 		}, first.bid);
-// 		}
-// 		}
-// 	},
-// 	beer);
-// }
-
-
-
-
-
-
+// Gets information for an individual beer
+// Takes the BA url and the cb
 function get_info(url, cb){
   ba.beerPage(url, function(beer) {
-      return cb(beer);
+      cb(beer);
   });
 }
 
+// Gets the url of a beer when passing its name
 function get_url(beer_name, cb) {
-  console.log("Getting url for: " + beer_name);
   ba.beerURL(beer_name, function(url) {
-    console.log("GET_URL : " + url);
       cb(url);
   });
 }
 
-function add_beer(name, bar){
-  get_url(name, function (url) {
-    console.log("FOUND URL: " + url);
-    get_info(url, function (beer) {
 
-      if (typeof beer[0] !== 'undefined' && beer[0]) {
-        var beer = JSON.parse(beer)[0];
+function build_object(beer, bar, serving, url, cb){
+  if (typeof beer[0] !== 'undefined' && beer[0]) {
+    var beer = JSON.parse(beer)[0];
+    var db_beer = {
+      'bar' : bar,
+      'brewery' : beer.brewery_name,
+      'name' : beer.beer_name,
+      'abv' : beer.beer_abv,
+      'rating': beer.ba_score,
+      'style' : beer.beer_style,
+      'url': url,
+      'serving': serving
 
-        var db_beer = {
-          'bar' : bar,
-          'brewery' : beer.brewery_name,
-          'name' : beer.beer_name,
-          'abv' : beer.beer_abv,
-          'rating': beer.ba_score,
-          'style' : beer.beer_style,
-          'url': url
-
-        }
-        console.log("Adding:" + JSON.stringify(db_beer + " to the db"));
-        add_to_collection('beers', db_beer)
-      }
-    });
-  });
+    }
+    console.log("Created " + db_beer + " object");
+    cb(db_beer)
+  }
 }
 
-// add_beer("Anchor Steam", "Maxs");
+function serving(type){
+  if (typeof type === 'undefined'){
+    // if serving type isn't specific, assign on_tap
+    return 'on_tap';
+  }
+  return type;
+}
 
-
-
-bars.forEach(function (bar) {
+function get_beers(bar, cb){
+  console.log('getting beers for bar: ' + bar);
   request(bar.url, function (err, res, body) {
     $ = cheerio.load(body);
     beers = $(bar.css);
     console.log('\n\n***' + beers.length + ' beers at ' + bar.name + '***\n');
     $(beers).each(function (i, beer) {
+      var parent_id = $(beers[i]).closest('ul').attr('id');
       console.log((i+1) + ". " + $(beer).text());
-      add_beer($(beer, bar.name).text(), bar.name);
+      // build_object($(beer, bar.name).text(), bar.name, serving(parent_id));
+      cb($(beer, bar.name).text(), bar.name, serving(parent_id));
     });
+  
   });
-});
+}
 
+bars.forEach(function (bar){
+  get_beers(bar, function (beer, bar, serving){
+    get_url(beer, function (url){
+      get_info(url, function (data){
+        build_object(data, bar, serving, url, function(data){
+          add_to_collection(data);
+        })
+      })
+    })
+  })
+})
 
