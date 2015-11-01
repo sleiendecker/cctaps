@@ -32,26 +32,23 @@ var add_to_collection = function(data){
 	  	var collection = db.collection("beers");
       console.log('bar name: ' + data.bar);
 			collection.insert(data);
+      return
 			}
 	});
 }
 
-
-// Gets information for an individual beer
-// Takes the BA url and the cb
 function get_info(url, cb){
   ba.beerPage(url, function(beer) {
       cb(beer);
   });
 }
 
-// Gets the url of a beer when passing its name
+
 function get_url(beer_name, cb) {
   ba.beerURL(beer_name, function(url) {
       cb(url);
   });
 }
-
 
 function build_object(beer, bar, serving, url, cb){
   if (typeof beer[0] !== 'undefined' && beer[0]) {
@@ -65,7 +62,6 @@ function build_object(beer, bar, serving, url, cb){
       'style' : beer.beer_style,
       'url': url,
       'serving': serving
-
     }
     console.log("Created " + db_beer + " object");
     cb(db_beer)
@@ -87,12 +83,11 @@ function get_beers(bar, cb){
     beers = $(bar.css);
     console.log('\n\n***' + beers.length + ' beers at ' + bar.name + '***\n');
     $(beers).each(function (i, beer) {
+      // This is bm-specific. Add handler for custom css.
       var parent_id = $(beers[i]).closest('ul').attr('id');
       console.log((i+1) + ". " + $(beer).text());
-      // build_object($(beer, bar.name).text(), bar.name, serving(parent_id));
       cb($(beer, bar.name).text(), bar.name, serving(parent_id));
     });
-  
   });
 }
 
