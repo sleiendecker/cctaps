@@ -37,3 +37,7 @@ untappd_keys.js
 scripts/sources.js
 scripts/ba_api.js
 views/index.ejs
+
+node_modules/
+app/
+.DS_Store
