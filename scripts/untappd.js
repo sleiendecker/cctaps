@@ -23,7 +23,7 @@ untappd.setClientSecret(keys.clientSecret);
 
 
 
-var add_to_collection = function(data){
+var addToCollection = function(data){
 	var MongoClient = require('mongodb').MongoClient;
 	MongoClient.connect("mongodb://localhost:27017/cctaps", function(err, db) {
 		if(!err) {
@@ -37,23 +37,23 @@ var add_to_collection = function(data){
 	});
 }
 
-function get_info(url, cb){
+function getInfo(url, cb){
   ba.beerPage(url, function(beer) {
       cb(beer);
   });
 }
 
 
-function get_url(beer_name, cb) {
-  ba.beerURL(beer_name, function(url) {
+function getUrl(beerName, cb) {
+  ba.beerURL(beerName, function(url) {
       cb(url);
   });
 }
 
-function build_object(beer, bar, serving, url, cb){
+function buildObject(beer, bar, serving, url, cb){
   if (typeof beer[0] !== 'undefined' && beer[0]) {
     var beer = JSON.parse(beer)[0];
-    var db_beer = {
+    var dbBeer = {
       'bar' : bar,
       'brewery' : beer.brewery_name,
       'name' : beer.beer_name,
@@ -63,8 +63,8 @@ function build_object(beer, bar, serving, url, cb){
       'url': url,
       'serving': serving
     }
-    console.log("Created " + db_beer + " object");
-    cb(db_beer)
+    console.log("Created " + dbBeer + " object");
+    cb(dbBeer)
   }
 }
 
@@ -93,10 +93,10 @@ function get_beers(bar, cb){
 
 bars.forEach(function (bar){
   get_beers(bar, function (beer, bar, serving){
-    get_url(beer, function (url){
-      get_info(url, function (data){
-        build_object(data, bar, serving, url, function(data){
-          add_to_collection(data);
+    getUrl(beer, function (url){
+      getInfo(url, function (data){
+        buildObject(data, bar, serving, url, function(data){
+          addToCollection(data);
         })
       })
     })
