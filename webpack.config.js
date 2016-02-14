@@ -1,7 +1,7 @@
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
-  entry: [ './src/client/js/index.js' ],
+  entry: [ './src/client/index.js' ],
   module: {
     loaders: [{
       test: /\.jsx?$/,
@@ -15,6 +15,11 @@ module.exports = {
   resolve: {
     extensions: ['', '.js', '.jsx']
   },
+  resolveLoader: {
+    modulesDirectories: [
+        './node_modules'
+    ]
+  },
   output: {
     path: __dirname,
     publicPath: '/',
@@ -23,6 +28,7 @@ module.exports = {
   plugins: [new HtmlWebpackPlugin({
     title: 'cctaps',
     template: './src/client/index.html',
+    favicon: './src/server/favicon.ico',
     inject: 'body'
   })],
   devServer: {

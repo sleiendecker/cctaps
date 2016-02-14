@@ -1,7 +1,6 @@
 'use strict';
 
 import gulp from 'gulp';
-import gulpPlugins from 'gulp-load-plugins';
 import shell from 'gulp-shell';
 import rimraf from 'rimraf';
 import run from 'run-sequence';
@@ -12,10 +11,9 @@ import webpack from 'webpack-stream';
 import WebpackDevServer from 'webpack-dev-server';
 import webpackConfig from './webpack.config';
 
-const $ = gulpPlugins({lazy: true});
 const paths = {
   serverJS    : ['./src/server/**/*.js'],
-  serverDest  : './app',
+  serverDest  : './src/server/index.js',
   clientJS    : ['./src/client/**/*.js'],
   clientDest  : './app'
 };
@@ -23,7 +21,7 @@ const paths = {
 let express;
 
 gulp.task('default', cb => {
-  run('server', 'build', 'watch', cb);
+  run('server', 'build', cb);
 });
 
 gulp.task('build', cb => {
@@ -47,7 +45,7 @@ gulp.task('babel', shell.task([
 ]));
 
 gulp.task('webpack', () => {
-  return gulp.src('./src/client/js/index.js')
+  return gulp.src('./src/client/index.js')
     .pipe(webpack(webpackConfig))
     .pipe(gulp.dest('./app'));
 });
