@@ -35,6 +35,8 @@ app.use((req, res, next) => {
 MongoClient.connect("mongodb://localhost:27017/cctaps", (err, db) => {
   if (!err) {
     console.log('We are connected');
+  } else {
+    console.log('error', error);
   }
 });
 

@@ -73,15 +73,3 @@ gulp.task('server', () => {
 gulp.task('restart', () => {
   express.start.bind(express)();
 });
-
-// gulp.task('watch', () => {
-//   return watch(paths.serverJS, () => {
-//     gulp.start('build');
-//   });
-// });
-
-// gulp.task('watch', () => {
-//   return watch(paths.clientJS, () => {
-//     gulp.start('build');
-//   });
-// })
