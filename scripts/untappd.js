@@ -1,8 +1,11 @@
+'use strict';
+
 // Imports
 var UntappdClient = require("../node_modules/node-untappd/UntappdClient",false);
 var MongoClient = require('mongodb').MongoClient;
 var fs = require('fs');
 var util = require('util');
+var async = require('async');
 var keys = require("./keys/untappd_keys");
 var scrape = require("./scrape");
 
@@ -21,51 +24,47 @@ var untappd = new UntappdClient(debug);
 untappd.setClientId(keys.clientId);
 untappd.setClientSecret(keys.clientSecret);
 
-
-
-var addToCollection = function(data){
-	var MongoClient = require('mongodb').MongoClient;
-	MongoClient.connect("mongodb://localhost:27017/cctaps", function(err, db) {
-		if(!err) {
-	  	console.log("We are connected");
-	  	console.log("Adding " + JSON.stringify(data) + " to the beers collection");
-	  	var collection = db.collection("beers");
-      console.log('bar name: ' + data.bar);
-			collection.insert(data);
-      return
-			}
-	});
+var addToCollection = function(err, data){
+  if (err) {
+    console.log('Unable to add to collection');
+  }else{
+    MongoClient.connect("mongodb://localhost:27017/cctaps", function(err, db) {
+      if(!err) {
+        console.log("We are connected");
+        var collection = db.collection("beers");
+        collection.insert(data);
+        db.close();
+        }
+    });
+  }
 }
 
 function getInfo(url, cb){
-  ba.beerPage(url, function(beer) {
-      cb(beer);
+  ba.beerPage(url, function(beerInfo) {
+    beerInfo = JSON.parse(beerInfo);
+      cb(null, beerInfo);
   });
 }
-
 
 function getUrl(beerName, cb) {
   ba.beerURL(beerName, function(url) {
-      cb(url);
+    // console.log(beerName + ' url: ' + url);
+    cb(null, url);
   });
 }
 
-function buildObject(beer, bar, serving, url, cb){
-  if (typeof beer[0] !== 'undefined' && beer[0]) {
-    var beer = JSON.parse(beer)[0];
-    var dbBeer = {
-      'bar' : bar,
-      'brewery' : beer.brewery_name,
-      'name' : beer.beer_name,
-      'abv' : beer.beer_abv,
-      'rating': beer.ba_score,
-      'style' : beer.beer_style,
-      'url': url,
-      'serving': serving
-    }
-    console.log("Created " + dbBeer + " object");
-    cb(dbBeer)
+function buildObject(beer, bar, url, cb){
+  var beer = beer[0];
+  var dbBeer = {
+    'bar' : bar,
+    'brewery' : beer.brewery_name,
+    'name' : beer.beer_name,
+    'abv' : beer.beer_abv,
+    'rating': beer.ba_score,
+    'style' : beer.beer_style,
+    'url': url
   }
+  cb(null, dbBeer)
 }
 
 function serving(type){
@@ -76,30 +75,86 @@ function serving(type){
   return type;
 }
 
-function get_beers(bar, cb){
-  console.log('getting beers for bar: ' + bar);
+/**
+ * Given a bar object containing a url, getBeers returns an
+ * array of beer strings.
+ */
+function getBeers(bar, cb){
+  console.log('getting beers for bar: ' + bar.name);
   request(bar.url, function (err, res, body) {
-    $ = cheerio.load(body);
-    beers = $(bar.css);
-    console.log('\n\n***' + beers.length + ' beers at ' + bar.name + '***\n');
-    $(beers).each(function (i, beer) {
-      // This is bm-specific. Add handler for custom css.
-      var parent_id = $(beers[i]).closest('ul').attr('id');
-      console.log((i+1) + ". " + $(beer).text());
-      cb($(beer, bar.name).text(), bar.name, serving(parent_id));
+    var $          = cheerio.load(body),
+    beers          = $(bar.css),
+    beersFormatted = [];
+
+    $(beers).each(function(i, beer) {
+      beersFormatted.push($(beer).text().trim());
     });
+    console.log('Found beers:\n' + beersFormatted);
+    cb(null, beersFormatted);
   });
 }
 
-bars.forEach(function (bar){
-  get_beers(bar, function (beer, bar, serving){
-    getUrl(beer, function (url){
-      getInfo(url, function (data){
-        buildObject(data, bar, serving, url, function(data){
-          addToCollection(data);
-        })
-      })
-    })
-  })
-})
+function getServing(err, bar, beers, cb){
+  cb(null, bar, body(beer, bar).text().trim(), serving(parent_id));
+}
 
+function addToArray(beers){
+  var beers = []
+  $(beers).each(function (beer) {
+    // This is bm-specific. Add handler for custom css.
+    var parent_id = $(beer).closest('ul').attr('id');
+    cb(null, $(beer, bar.name).text().trim(), bar.name, serving(parent_id));
+  });
+  return
+}
+
+
+function beerWaterfall(beer, cb){
+  async.waterfall([
+    function(callback){
+      console.log('Getting url');
+      getUrl(beer, function(err, url){
+        callback(err, url);
+      });
+    },
+    function(url, callback){
+      console.log('Getting info');
+      getInfo(url, function(err, beerInfo){
+        callback(err, beerInfo, url);
+      })
+    },
+    function(beerInfo, url, callback){
+      console.log('Building object');
+      buildObject(beerInfo, bar.name, url, function (err, dbBeer) {
+        callback(err, dbBeer);
+      })
+    }
+  ],
+  function(err, data){
+    console.log('Adding ' + JSON.stringify(data) + ' to collection');
+    addToCollection(null, data);
+    cb();
+  });
+}
+
+var processBeers = function(callback){
+  async.forEach(bars, function(bar, callback){
+    getBeers(bar, function(err, beers) {
+      async.forEach(beers, function(beer, callback){
+        console.log('Evaluating beer: ' + beer);
+        beerWaterfall(beer, function(err, res){
+          callback();
+        })
+      }, function(err){
+        console.log('All processed');
+        callback();
+      });
+    });
+  }, function(err){
+    console.log('err');
+  });
+}
+
+processBeers(function(err, beers){
+  console.log('Beers ', beers);
+})
