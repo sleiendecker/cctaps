@@ -24,28 +24,35 @@ var untappd = new UntappdClient(debug);
 untappd.setClientId(keys.clientId);
 untappd.setClientSecret(keys.clientSecret);
 
-var query = function(collection, object){
+var query = function(collection, object, prop){
   console.log('Querying...');
-  collection.update( {url: object.url},
+  if (object.hasOwnProperty('url')){
+    collection.update( {url: object.url},
         { $set : object},
         { upsert: true })
+  } else {
+    collection.update( {lastUpdated: object.lastUpdated},
+        { $set : object},
+        { upsert: true })
+  }
 }
 
-var addToCollection = function(err, data){
+var addToCollection = function(err, beerObject, lastUpdated, cb){
   if (err) {
     console.log('Unable to add to collection');
   }else{
     MongoClient.connect("mongodb://localhost:27017/cctaps", function(err, db) {
       if(!err) {
-        console.log("Adding to ", data.bar);
-        var collection = db.collection(data.bar);
-        query(collection, data);
+        console.log("Adding to ", beerObject.bar);
+        var collection = db.collection(beerObject.bar);
+        query(collection, beerObject);
+        query(collection, {lastUpdated: lastUpdated});
         db.close();
         }
     });
   }
+  cb();
 }
-
 
 function getInfo(url, cb){
   ba.beerPage(url, function(beerInfo) {
@@ -83,13 +90,14 @@ function getBeers(bar, cb){
   request(bar.url, function (err, res, body) {
     var $          = cheerio.load(body),
     beers          = $(bar.css),
-    beersFormatted = [];
-
+    beersFormatted = [],
+    lastUpdated    = $('.text-oranges').text();
+    lastUpdated    = lastUpdated.substring(lastUpdated.indexOf(":") + 1);
+    // lastUpdated.date = theDate;
     $(beers).each(function(i, beer) {
       beersFormatted.push($(beer).text().trim());
     });
-    // console.log('Found beers:\n' + beersFormatted);
-    cb(null, beersFormatted);
+    cb(null, beersFormatted, lastUpdated);
   });
 }
 
@@ -104,7 +112,7 @@ function getBeers(bar, cb){
 // }
 
 
-function beerWaterfall(bar, beer, cb){
+function beerWaterfall(bar, beer, lastUpdated, cb){
   async.waterfall([
     function(callback){
       console.log('Getting url');
@@ -126,27 +134,26 @@ function beerWaterfall(bar, beer, cb){
     }
   ],
   function(err, data){
-    console.log('Adding ' + JSON.stringify(data) + ' to collection');
-    addToCollection(null, data);
-    cb();
+    addToCollection(null, data, lastUpdated, cb);
   });
 }
 
 var processBeers = function(callback){
   async.forEach(bars, function(bar, callback){
-    getBeers(bar, function(err, beers) {
+    getBeers(bar, function(err, beers, lastUpdated) {
       async.forEach(beers, function(beer, callback){
-        console.log('Evaluating beer: ' + beer);
-        beerWaterfall(bar, beer, function(err, res){
+        beerWaterfall(bar, beer, lastUpdated, function(err, res){
           callback();
         })
       }, function(err){
-        console.log('All processed');
         callback();
       });
     });
+
   }, function(err){
-    console.log('err');
+    if (err){
+      console.log('err: ' + err);
+    }
   });
 }
 
