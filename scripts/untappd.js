@@ -40,13 +40,11 @@ var addToCollection = function(err, data){
         console.log("We are connected");
         var collection = db.collection("beers");
         query(collection, data);
-        // collection.insert(data);
         db.close();
         }
     });
   }
 }
-
 
 
 function getInfo(url, cb){
@@ -58,7 +56,6 @@ function getInfo(url, cb){
 
 function getUrl(beerName, cb) {
   ba.beerURL(beerName, function(url) {
-    // console.log(beerName + ' url: ' + url);
     cb(null, url);
   });
 }
@@ -75,14 +72,6 @@ function buildObject(beer, bar, url, cb){
     'url': url
   }
   cb(null, dbBeer)
-}
-
-function serving(type){
-  if (typeof type === 'undefined'){
-    // if serving type isn't specific, assign on_tap
-    return 'on_tap';
-  }
-  return type;
 }
 
 /**
