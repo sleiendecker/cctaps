@@ -24,20 +24,19 @@ var untappd = new UntappdClient(debug);
 untappd.setClientId(keys.clientId);
 untappd.setClientSecret(keys.clientSecret);
 
-var query = function(collection, object){
-  console.log('Querying...');
+var addToCollection = function(collection, object){
+  var mongoOpts = {
+    set: {$set : object},
+    upsert: { upsert: true}
+  }
   if (object.hasOwnProperty('url')){
-    collection.update( {url: object.url},
-        { $set : object},
-        { upsert: true })
+    collection.update( {url: object.url}, mongoOpts.set, mongoOpts.upsert)
   } else {
-    collection.update( {lastUpdated: object.lastUpdated},
-        { $set : object},
-        { upsert: true })
+    collection.update( {lastUpdated: object.lastUpdated},mongoOpts.set, mongoOpts.upsert)
   }
 }
 
-var addToCollection = function(err, beerObject, lastUpdated, cb){
+var connectToDb = function(err, beerObject, lastUpdated, cb){
   if (err) {
     console.log('Unable to add to collection');
   }else{
@@ -45,8 +44,8 @@ var addToCollection = function(err, beerObject, lastUpdated, cb){
       if(!err) {
         console.log("Adding to ", beerObject.bar);
         var collection = db.collection(beerObject.bar);
-        query(collection, beerObject);
-        query(collection, {lastUpdated: lastUpdated});
+        addToCollection(collection, beerObject);
+        addToCollection(collection, {lastUpdated: lastUpdated});
         db.close();
         }
     });
@@ -134,7 +133,7 @@ function beerWaterfall(bar, beer, lastUpdated, cb){
     }
   ],
   function(err, data){
-    addToCollection(null, data, lastUpdated, cb);
+    connectToDb(null, data, lastUpdated, cb);
   });
 }
 
