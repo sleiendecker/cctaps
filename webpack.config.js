@@ -1,30 +1,37 @@
-'use strict';
-
-var path = require('path');
+var HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
-  entry: './public/js/index.js',
-  output: {
-    path:      path.join(__dirname, 'build/js/'),
-    filename: 'bundle.js'
+  entry: [ './src/client/index.js' ],
+  module: {
+    loaders: [{
+      test: /\.jsx?$/,
+      excluse: /node_modules/,
+      loader: 'babel',
+      query: {
+        presets: ['react', 'es2015', 'stage-0']
+      }
+    }]
   },
   resolve: {
-    modulesDirectories: ['node_modules'],
-    extensions:         ['', '.js']
+    extensions: ['', '.js', '.jsx']
   },
-  colors: true,
-  inline: true,
-  module: {
-    loaders: [
-      {
-        test: /\.js$/,
-        exclude: /node_modules/,
-        loader: 'babel-loader?optional=runtime'
-      },
-      {
-        test: /\.(woff|otf|eot|woff2|svg|ttf|png|jpg|jpeg)$/,
-        loader: 'url?limit=100000'
-      }
+  resolveLoader: {
+    modulesDirectories: [
+        './node_modules'
     ]
+  },
+  output: {
+    path: __dirname,
+    publicPath: '/',
+    filename: 'bundle.js'
+  },
+  plugins: [new HtmlWebpackPlugin({
+    title: 'cctaps',
+    template: './src/client/index.html',
+    favicon: './src/server/favicon.ico',
+    inject: 'body'
+  })],
+  devServer: {
+    contentBase: './app'
   }
-};
+}

@@ -12,8 +12,8 @@ var scrape = require("./scrape");
 var ba = require('./ba_api.js');
 
 var cheerio = require('cheerio'),
-request		 	= require('request'),
-bar 				= require('./sources.js'),
+request     = require('request'),
+bar         = require('./sources.js'),
 bars        = bar.bars;
 
 // Set to true if you want to see all sort of nasty output on stdout.
@@ -24,6 +24,13 @@ var untappd = new UntappdClient(debug);
 untappd.setClientId(keys.clientId);
 untappd.setClientSecret(keys.clientSecret);
 
+var query = function(collection, object){
+  console.log('Querying...');
+  collection.update( {url: object.url},
+        { $set : object},
+        { upsert: true })
+}
+
 var addToCollection = function(err, data){
   if (err) {
     console.log('Unable to add to collection');
@@ -32,12 +39,15 @@ var addToCollection = function(err, data){
       if(!err) {
         console.log("We are connected");
         var collection = db.collection("beers");
-        collection.insert(data);
+        query(collection, data);
+        // collection.insert(data);
         db.close();
         }
     });
   }
 }
+
+
 
 function getInfo(url, cb){
   ba.beerPage(url, function(beerInfo) {
@@ -89,27 +99,23 @@ function getBeers(bar, cb){
     $(beers).each(function(i, beer) {
       beersFormatted.push($(beer).text().trim());
     });
-    console.log('Found beers:\n' + beersFormatted);
+    // console.log('Found beers:\n' + beersFormatted);
     cb(null, beersFormatted);
   });
 }
 
-function getServing(err, bar, beers, cb){
-  cb(null, bar, body(beer, bar).text().trim(), serving(parent_id));
-}
-
-function addToArray(beers){
-  var beers = []
-  $(beers).each(function (beer) {
-    // This is bm-specific. Add handler for custom css.
-    var parent_id = $(beer).closest('ul').attr('id');
-    cb(null, $(beer, bar.name).text().trim(), bar.name, serving(parent_id));
-  });
-  return
-}
+// function addToArray(beers){
+//   var beers = []
+//   $(beers).each(function (beer) {
+//     // This is bm-specific. Add handler for custom css.
+//     var parent_id = $(beer).closest('ul').attr('id');
+//     cb(null, $(beer, bar.name).text().trim(), bar.name, serving(parent_id));
+//   });
+//   return
+// }
 
 
-function beerWaterfall(beer, cb){
+function beerWaterfall(bar, beer, cb){
   async.waterfall([
     function(callback){
       console.log('Getting url');
@@ -142,7 +148,7 @@ var processBeers = function(callback){
     getBeers(bar, function(err, beers) {
       async.forEach(beers, function(beer, callback){
         console.log('Evaluating beer: ' + beer);
-        beerWaterfall(beer, function(err, res){
+        beerWaterfall(bar, beer, function(err, res){
           callback();
         })
       }, function(err){
