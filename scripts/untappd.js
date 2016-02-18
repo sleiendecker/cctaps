@@ -24,7 +24,7 @@ var untappd = new UntappdClient(debug);
 untappd.setClientId(keys.clientId);
 untappd.setClientSecret(keys.clientSecret);
 
-var query = function(collection, object, prop){
+var query = function(collection, object){
   console.log('Querying...');
   if (object.hasOwnProperty('url')){
     collection.update( {url: object.url},
