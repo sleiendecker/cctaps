@@ -37,8 +37,8 @@ var addToCollection = function(err, data){
   }else{
     MongoClient.connect("mongodb://localhost:27017/cctaps", function(err, db) {
       if(!err) {
-        console.log("We are connected");
-        var collection = db.collection("beers");
+        console.log("Adding to ", data.bar);
+        var collection = db.collection(data.bar);
         query(collection, data);
         db.close();
         }
