@@ -100,16 +100,6 @@ function getBeers(bar, cb){
   });
 }
 
-// function addToArray(beers){
-//   var beers = []
-//   $(beers).each(function (beer) {
-//     // This is bm-specific. Add handler for custom css.
-//     var parent_id = $(beer).closest('ul').attr('id');
-//     cb(null, $(beer, bar.name).text().trim(), bar.name, serving(parent_id));
-//   });
-//   return
-// }
-
 
 function beerWaterfall(bar, beer, lastUpdated, cb){
   async.waterfall([
