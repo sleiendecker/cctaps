@@ -52,7 +52,7 @@ var connectToDb = function(err, beerObject, lastUpdated, cb){
         var collection = db.collection('beers');
         addToCollection(collection, beerObject, function(id){
           // Add id to bar collection
-          db.collection('bars').update({ name: beerObject.bar },{$push: {'beers': {_id: id}}});
+          db.collection('bars').update({ name: beerObject.bar },{$push: {'beers': id}});
         });
         db.close();
       }
