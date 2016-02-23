@@ -98,8 +98,10 @@ function checkIfBarExists(bar, db, cb){
 
 
 function checkLastUpdated(bar, db, newBar, cb){
+  console.log('checkLastUpdated bar: ', JSON.stringify(bar));
   var upToDate;
   db.collection('bars').findOne({'name': bar.name}, function(err, doc){
+    console.log('Found doc: ' + JSON.stringify(doc));
     if (doc.lastUpdated < bar.lastUpdated || (newBar)) {
       upToDate = false;
     } else {
@@ -107,6 +109,13 @@ function checkLastUpdated(bar, db, newBar, cb){
     }
     cb(upToDate);
   });
+}
+
+function parseDate(date){
+  var removedDate  = date.substring(date.indexOf(":") + 1),
+  parsedDate = removedDate.substring(0, removedDate.indexOf('|'));
+  console.log('Returning parsedDate: ', parsedDate);
+  return parsedDate
 }
 
 /**
@@ -120,13 +129,15 @@ function getBeers(bar, cb){
     var $             = cheerio.load(body),
     beers             = $(bar.css),
     beersFormatted    = [],
-    rawUpdated        = $('.text-oranges').text(),
-    formattedUpdated  = rawUpdated.substring(rawUpdated.indexOf(":") + 1);
-    bar.lastUpdated   = formattedUpdated;
+    rawUpdated        = $('.pure-u-1-2 span').text();
+
+    bar.lastUpdated   = parseDate(rawUpdated);
     $(beers).each(function(i, beer) {
       beersFormatted.push($(beer).text().trim());
     });
 
+    // console.log('rawUpdated: ', rawUpdated);
+    console.log('bar.lastUpdated: ', bar.lastUpdated);
     var dbBar = {
       name: bar.name,
       lastUpdated: bar.lastUpdated,
@@ -137,6 +148,8 @@ function getBeers(bar, cb){
       checkIfBarExists(dbBar, db, function(status) {
         // If the bar doesn't exist in the db
         if (status === null){
+          console.log(dbBar.name + ' does not exist.'
+                                  +'\nAdding ' + JSON.stringify(dbBar) + 'to the db');
           newBar = true;
           var collection = db.collection("bars");
           collection.insert(dbBar);
@@ -191,6 +204,7 @@ var processBeers = function(callback){
   async.forEach(bars, function(bar, callback){
     getBeers(bar, function(err, beers, lastUpdated) {
       async.forEach(beers, function(beer, callback){
+        console.log('Scraping: ', bar.name);
         beerWaterfall(bar, beer, lastUpdated, function(err, res){
           callback();
         })
