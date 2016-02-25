@@ -6,6 +6,7 @@ import rimraf from 'rimraf';
 import run from 'run-sequence';
 import watch from 'gulp-watch';
 import gutil from 'gulp-util';
+import nodemon from 'gulp-nodemon';
 import server from 'gulp-live-server';
 import webpack from 'webpack-stream';
 import WebpackDevServer from 'webpack-dev-server';
@@ -25,7 +26,7 @@ gulp.task('default', cb => {
 });
 
 gulp.task('build', cb => {
-  run('clean-client', 'webpack', 'restart', cb);
+  run('clean-client', 'webpack', cb);
 });
 
 gulp.task('build-dev', cb => {
@@ -66,10 +67,25 @@ gulp.task('webpack-dev-server', () => {
   });
 });
 
+// this will only be dev-server hopefully
 gulp.task('server', () => {
-  express = server.new(['--harmony', paths.serverDest]);
-});
-
-gulp.task('restart', () => {
-  express.start.bind(express)();
+  nodemon({
+    script: paths.serverDest,
+    ext: 'js',
+    execMap: {
+      js: "node --harmony"
+    },
+    watch: ['./src/server']
+    // ignore: [
+    //   './src/client/',
+    //   './scripts/',
+    //   './node_modules',
+    //   './app',
+    //   './dump',
+    //   './gulpfile.babel.js',
+    //   './webpack.config.js'
+    // ]
+  }).on('restart', () => {
+    console.log('*** NODEMON RESTARTED ***');
+  });
 });

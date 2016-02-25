@@ -28,11 +28,6 @@ router.get('/', function (req, res, next) {
 
 
 
-
-router.get('/helloworld', function (req, res) {
-  res.render('helloworld', { title: 'Hello Baltimore Resident'});
-});
-
 router.get('/express', function (req, res) {
   res.render('index', { title: 'Express' });
 });
