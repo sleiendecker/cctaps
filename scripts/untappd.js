@@ -1,32 +1,26 @@
 'use strict';
 
-// Imports
-var UntappdClient = require("../node_modules/node-untappd/UntappdClient",false);
+// Mongo Imports
 var MongoClient = require('mongodb').MongoClient;
 var MongoServer = "mongodb://localhost:27017/cctaps";
 var ObjectID = require('mongodb').ObjectID;
-var fs = require('fs');
-var util = require('util');
-var async = require('async');
-var keys = require("./keys/untappd_keys");
-var scrape = require("./scrape");
 
-var ba = require('./ba_api.js');
+// Dependencies
+var async   = require('async'),
+cheerio = require('cheerio'),
+request = require('request'),
+bars     = require('./sources.js').bars;
 
-var cheerio = require('cheerio'),
-request     = require('request'),
-bar         = require('./sources.js'),
-bars        = bar.bars;
+var ba  = require('./ba_api.js');
 
-// Set to true if you want to see all sort of nasty output on stdout.
-var debug = false;
-
-// Create Client
-var untappd = new UntappdClient(debug);
-untappd.setClientId(keys.clientId);
-untappd.setClientSecret(keys.clientSecret);
 
 var addToCollection = function(collection, object, cb){
+  if (object.rating === '-'){
+    console.log('No rating')
+  }else{
+    console.log('Found rating: ', object.rating);
+  }
+  console.log('\n\nBeer: ' + object.name + ' --- Rating: ' + object.rating);
   var mongoOpts = {
     set: {$set : object},
     upsert: { upsert: true}
@@ -37,15 +31,13 @@ var addToCollection = function(collection, object, cb){
   cb(object._id);
 }
 
-
-
 var addBeerToBar = function(collection, id){
     collection.update( {url: object.url}, mongoOpts.set, mongoOpts.upsert)
 }
 
 var connectToDb = function(err, beerObject, lastUpdated, cb){
   if (err) {
-    console.log('Unable to add to collection');
+    // console.log('Unable to add to collection');
   }else{
     MongoClient.connect(MongoServer, function(err, db) {
       if(!err) {
@@ -63,6 +55,7 @@ var connectToDb = function(err, beerObject, lastUpdated, cb){
 
 function getInfo(url, cb){
   ba.beerPage(url, function(beerInfo) {
+    console.log('beerInfo', beerInfo);
     beerInfo = JSON.parse(beerInfo);
       cb(null, beerInfo);
   });
@@ -74,6 +67,18 @@ function getUrl(beerName, cb) {
   });
 }
 
+function formatRating(rating){
+
+  var rating = (rating*20+10);
+  console.log('Formating: ', rating);
+  var newRating = Math.floor( rating );
+  console.log('newRating: ', newRating);
+  return newRating;
+  // parsedDate = removedDate.substring(0, removedDate.indexOf('|'));
+
+}
+
+
 function buildObject(beer, bar, url, cb){
   var beer = beer[0];
   var dbBeer = {
@@ -83,6 +88,7 @@ function buildObject(beer, bar, url, cb){
     name : beer.beer_name,
     abv : beer.beer_abv,
     rating: beer.ba_score,
+    newRating: formatRating((beer.rAvg)),
     style : beer.beer_style,
     url: url
   }
@@ -90,18 +96,19 @@ function buildObject(beer, bar, url, cb){
 }
 
 function checkIfBarExists(bar, db, cb){
-  console.log('Checking if ' + bar.name + ' exists');
-  db.collection('bars').findOne({'bar': bar.bar}, function(err, doc){
+
+  console.log('BE FIRST');
+  db.collection('bars').findOne({'bar': bar.name}, function(err, doc){
+    console.log('checkIfBarExists: ', checkIfBarExists);
     cb(doc);
   });
 }
 
 
 function checkLastUpdated(bar, db, newBar, cb){
-  console.log('checkLastUpdated bar: ', JSON.stringify(bar));
+  console.log('BE SECOND');
   var upToDate;
   db.collection('bars').findOne({'name': bar.name}, function(err, doc){
-    console.log('Found doc: ' + JSON.stringify(doc));
     if (doc.lastUpdated < bar.lastUpdated || (newBar)) {
       upToDate = false;
     } else {
@@ -114,7 +121,6 @@ function checkLastUpdated(bar, db, newBar, cb){
 function parseDate(date){
   var removedDate  = date.substring(date.indexOf(":") + 1),
   parsedDate = removedDate.substring(0, removedDate.indexOf('|'));
-  console.log('Returning parsedDate: ', parsedDate);
   return parsedDate
 }
 
@@ -124,7 +130,7 @@ function parseDate(date){
  */
 function getBeers(bar, cb){
   var newBar;
-  // console.log('getting beers for bar: ' + bar.name);
+  console.log('getting beers for bar: ' + bar.name);
   request(bar.url, function (err, res, body) {
     var $             = cheerio.load(body),
     beers             = $(bar.css),
@@ -136,8 +142,6 @@ function getBeers(bar, cb){
       beersFormatted.push($(beer).text().trim());
     });
 
-    // console.log('rawUpdated: ', rawUpdated);
-    console.log('bar.lastUpdated: ', bar.lastUpdated);
     var dbBar = {
       name: bar.name,
       lastUpdated: bar.lastUpdated,
@@ -148,8 +152,7 @@ function getBeers(bar, cb){
       checkIfBarExists(dbBar, db, function(status) {
         // If the bar doesn't exist in the db
         if (status === null){
-          console.log(dbBar.name + ' does not exist.'
-                                  +'\nAdding ' + JSON.stringify(dbBar) + 'to the db');
+          console.log('bar does not exist!');
           newBar = true;
           var collection = db.collection("bars");
           collection.insert(dbBar);
@@ -164,12 +167,12 @@ function getBeers(bar, cb){
         if (res){
           console.log('Up to date');
         } else{
+          bar.beers = [];
           console.log('Updating')
           cb(null, beersFormatted, bar.lastUpdated);
         }
       });
     });
-
   });
 }
 
