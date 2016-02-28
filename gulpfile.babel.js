@@ -41,10 +41,6 @@ gulp.task('flow', shell.task([
   'flow'
 ], { ignoreErrors: true }));
 
-gulp.task('babel', shell.task([
-  'babel src --out-dir app'
-]));
-
 gulp.task('webpack', () => {
   return gulp.src('./src/client/index.js')
     .pipe(webpack(webpackConfig))

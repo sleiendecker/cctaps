@@ -14,11 +14,12 @@ const app = express();
 const server = http.Server(app);
 
 // view engine setup
-app.set('views', path.join(__dirname, 'views'));
+
 app.set('view engine', 'ejs');
 
 // server setup
-// app.use(express.static(path.join(__dirname, 'app')));
+app.use(express.static(path.join(__dirname, '../../app')));
+app.set('views', path.join(__dirname, 'views'));
 app.use(favicon(path.join(__dirname, '/', 'favicon.ico')));
 app.use(logger('dev'));
 app.use(bodyParser.json());

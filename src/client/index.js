@@ -1,40 +1,35 @@
-import { Component } from 'react';
 import React from 'react';
 import ReactDOM from 'react-dom';
+import Griddle from 'griddle-react';
 
-export default class Hello extends Component {
-
-  constructor () {
-    super();
-  }
-
-  onClick () {
-    const request = new XMLHttpRequest();
-    request.open('GET', '/beers', true);
-
-    request.onload = function() {
-      if (request.status >= 200 && request.status < 400) {
-        // Success!
-        console.log(request.responseText);
-      } else {
-        // We reached our target server, but it returned an error
-
-      }
-    };
-
-    request.onerror = () => {
-      // There was a connection error of some sort
-    };
-
-    request.send();
-  }
-
+export default class Hello extends React.Component {
   render () {
     const self = this;
 
+    const fakeData =  [
+      {
+        "id": 0,
+        "name": "Mayer Leonard",
+        "city": "Kapowsin",
+        "state": "Hawaii",
+        "country": "United Kingdom",
+        "company": "Ovolo",
+        "favoriteNumber": 7
+      },
+      {
+        "id": 1,
+        "name": "Maye22r Leonard",
+        "city": "Kapowafdssin",
+        "state": "Hawaisadasi",
+        "country": "United Kasdingdom",
+        "company": "Ovolasdsao",
+        "favoriteNumber": 72
+      }
+    ];
+
     return (
       <div id="indexTest">
-        <h1 onClick={self.onClick}>Welcome to CCtaps</h1>
+        <Griddle results={fakeData} />
       </div>
     );
   }

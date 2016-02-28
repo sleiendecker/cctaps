@@ -20,6 +20,7 @@
     "ejs": "^2.3.4",
     "express": "~4.13.1",
     "fs": "0.0.2",
+    "griddle-react": "^0.3.1",
     "mongodb": "~2.0.33",
     "monk": "~1.0.1",
     "morgan": "~1.6.1",
@@ -28,6 +29,7 @@
     "react-dom": "^0.14.7",
     "request": "^2.65.0",
     "serve-favicon": "~2.3.0",
+    "underscore": "^1.8.3",
     "util": "^0.10.3"
   },
   "devDependencies": {
