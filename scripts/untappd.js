@@ -167,7 +167,6 @@ function getBeers(bar, cb){
         if (res){
           console.log('Up to date');
         } else{
-          bar.beers = [];
           console.log('Updating')
           cb(null, beersFormatted, bar.lastUpdated);
         }
