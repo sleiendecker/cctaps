@@ -25,6 +25,7 @@ var addToCollection = function(collection, object, cb){
     set: {$set : object},
     upsert: { upsert: true}
   }
+  // Update if the query returns an object with a url property (a beer)
   if (object.hasOwnProperty('url')){
     collection.update( {url: object.url}, mongoOpts.set, mongoOpts.upsert)
   }
@@ -37,11 +38,12 @@ var addBeerToBar = function(collection, id){
 
 var connectToDb = function(err, beerObject, lastUpdated, cb){
   if (err) {
-    // console.log('Unable to add to collection');
+    console.log('Unable to add to collection');
   }else{
     MongoClient.connect(MongoServer, function(err, db) {
       if(!err) {
         var collection = db.collection('beers');
+        // Add beerObject to db
         addToCollection(collection, beerObject, function(id){
           // Add id to bar collection
           db.collection('bars').update({ name: beerObject.bar },{$push: {'beers': id}});
@@ -55,6 +57,7 @@ var connectToDb = function(err, beerObject, lastUpdated, cb){
 
 function getInfo(url, cb){
   ba.beerPage(url, function(beerInfo) {
+    // pass in beer's url to get info
     console.log('beerInfo', beerInfo);
     beerInfo = JSON.parse(beerInfo);
       cb(null, beerInfo);
@@ -62,33 +65,28 @@ function getInfo(url, cb){
 }
 
 function getUrl(beerName, cb) {
+  // pass in beer's name to get url
   ba.beerURL(beerName, function(url) {
     cb(null, url);
   });
 }
 
 function formatRating(rating){
-
-  var rating = (rating*20+10);
-  console.log('Formating: ', rating);
-  var newRating = Math.floor( rating );
-  console.log('newRating: ', newRating);
-  return newRating;
-  // parsedDate = removedDate.substring(0, removedDate.indexOf('|'));
-
+  // (Avg * 20 + 10) is almost identical to ba rating
+  return  Math.floor( rating * 20 + 10 );
 }
-
 
 function buildObject(beer, bar, url, cb){
   var beer = beer[0];
   var dbBeer = {
+    // Create ObjectID to be added to its bar
     _id: new ObjectID,
     bar : bar,
     brewery : beer.brewery_name,
     name : beer.beer_name,
     abv : beer.beer_abv,
     rating: beer.ba_score,
-    newRating: formatRating((beer.rAvg)),
+    newRating: formatRating(beer.rAvg),
     style : beer.beer_style,
     url: url
   }
@@ -96,17 +94,12 @@ function buildObject(beer, bar, url, cb){
 }
 
 function checkIfBarExists(bar, db, cb){
-
-  console.log('BE FIRST');
   db.collection('bars').findOne({'bar': bar.name}, function(err, doc){
-    console.log('checkIfBarExists: ', checkIfBarExists);
     cb(doc);
   });
 }
 
-
 function checkLastUpdated(bar, db, newBar, cb){
-  console.log('BE SECOND');
   var upToDate;
   db.collection('bars').findOne({'name': bar.name}, function(err, doc){
     if (doc.lastUpdated < bar.lastUpdated || (newBar)) {
@@ -120,8 +113,7 @@ function checkLastUpdated(bar, db, newBar, cb){
 
 function parseDate(date){
   var removedDate  = date.substring(date.indexOf(":") + 1),
-  parsedDate = removedDate.substring(0, removedDate.indexOf('|'));
-  return parsedDate
+  return removedDate.substring(0, removedDate.indexOf('|'));
 }
 
 /**

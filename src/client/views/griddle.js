@@ -10,4 +10,4 @@ class Barlist extends React.Component {
   }
 }
 
-ReactDOM.render(<Barlist/>, document.getElementById('app-container'));
+// ReactDOM.render(<Barlist/>, document.getElementById('app-container'));
