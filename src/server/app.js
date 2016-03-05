@@ -51,6 +51,36 @@ MongoClient.connect(databaseURL, (err, db) => {
       });
     });
   });
+
+  app.get('/api/:id', (req, res) => {
+    const cursor = db.collection('beers').find({}); // id
+
+    cursor.toArray((err, records) => {
+      if (err) {
+        console.log('ERR: ', err);
+        process.exit(1);
+      }
+
+      res.send({ records });
+    });
+  });
+
+  // error handling
+  app.use((req, res) => {
+
+    // browser request
+    if (req.accepts('html')) {
+      res.render('views/404.ejs');
+      return;
+    }
+
+    // json request
+    if (req.accepts('json')) {
+      res.send({ error: 'Not found' });
+      return;
+    }
+
+  });
 });
 
 server.listen(3000);
