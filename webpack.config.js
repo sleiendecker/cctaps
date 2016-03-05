@@ -25,12 +25,6 @@ module.exports = {
     publicPath: '/',
     filename: 'bundle.js'
   },
-  plugins: [new HtmlWebpackPlugin({
-    title: 'cctaps',
-    template: './src/client/index.html',
-    favicon: './src/server/favicon.ico',
-    inject: 'body'
-  })],
   devServer: {
     contentBase: './app'
   }
