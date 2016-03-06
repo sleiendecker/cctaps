@@ -1,11 +1,11 @@
-var HtmlWebpackPlugin = require('html-webpack-plugin');
-
 module.exports = {
   entry: [ './src/client/index.js' ],
+  progress: true,
+  colors: true,
   module: {
     loaders: [{
       test: /\.jsx?$/,
-      excluse: /node_modules/,
+      exclude: /node_modules/,
       loader: 'babel',
       query: {
         presets: ['react', 'es2015', 'stage-0']
@@ -13,7 +13,7 @@ module.exports = {
     }]
   },
   resolve: {
-    extensions: ['', '.js', '.jsx']
+    extensions: ['', '.js', '.html']
   },
   resolveLoader: {
     modulesDirectories: [
@@ -21,7 +21,7 @@ module.exports = {
     ]
   },
   output: {
-    path: __dirname,
+    path: __dirname + '/app',
     publicPath: '/',
     filename: 'bundle.js'
   },
