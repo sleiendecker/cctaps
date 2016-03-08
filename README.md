@@ -1,8 +1,8 @@
 # Charm City Taps
 This is the API and website for Charm City Taps.
 
-# Purpose 
-The idea of this app is to neatly display all beers at local Charm City bars in a sortable manner. 
+# Purpose
+The idea of this app is to neatly display all beers at local Charm City bars in a sortable manner.
 Sortable fields include ratings, style, and ABV.
 
 
@@ -14,12 +14,17 @@ brew install node
 brew install mongodb
 brew upgrade node
 brew upgrade mongodb
-``` 
+```
+
+The following global packages must be installed
+```unix
+npm install -g gulp webpack webpack-devserver nodemon flow
+```
 
 Try to access the /data/db dir. If it does not exist, create one.
  ```unix
  ls /data/db
- mkdir /data 
+ mkdir /data
  mkdir /data/db
  ```
 
@@ -48,12 +53,12 @@ If you see output similar to the following, it was successful and you should lea
 
 Go to the root of the repo and load the sample data into the db.
 ```unix
-cd /path/to/cctaps
+cd (project_dir)
 mongorestore --host=127.0.0.1 —db cctaps dump/cctaps/
 ```
-Start cctaps and go to localhost:3000/beerlist to see all the beers in your database.
+Start cctaps and go to localhost:3000 to see all the beers in your database.
 ```unix
-npm start
+gulp
 ```
 
 
