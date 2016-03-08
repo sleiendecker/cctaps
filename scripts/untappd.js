@@ -96,8 +96,6 @@ function buildObject(beer, bar, url, cb){
 }
 
 function checkIfBarExists(bar, db, cb){
-
-  console.log('BE FIRST');
   db.collection('bars').findOne({'bar': bar.name}, function(err, doc){
     console.log('checkIfBarExists: ', checkIfBarExists);
     cb(doc);
@@ -106,7 +104,6 @@ function checkIfBarExists(bar, db, cb){
 
 
 function checkLastUpdated(bar, db, newBar, cb){
-  console.log('BE SECOND');
   var upToDate;
   db.collection('bars').findOne({'name': bar.name}, function(err, doc){
     if (doc.lastUpdated < bar.lastUpdated || (newBar)) {

@@ -14,6 +14,7 @@ const databaseURL = 'mongodb://localhost:27017/cctaps';
 const MongoClient = mongodb.MongoClient;
 const app = express();
 const server = http.Server(app);
+const ObjectID = mongodb.ObjectID;
 
 // view engine setup
 app.set('view engine', 'ejs');
@@ -59,14 +60,13 @@ MongoClient.connect(databaseURL, (err, db) => {
   });
 
   app.get('/api/:id', (req, res) => {
-    const cursor = db.collection('beers').find({}); // id
-
+    const cursor = db.collection('beers').find({_id: ObjectID(req.params.id)}); // id
+    console.log(cursor);
     cursor.toArray((err, records) => {
       if (err) {
         console.log('ERR: ', err);
         process.exit(1);
       }
-
       res.send({ records });
     });
   });
