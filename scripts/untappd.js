@@ -112,7 +112,7 @@ function checkLastUpdated(bar, db, newBar, cb){
 }
 
 function parseDate(date){
-  var removedDate  = date.substring(date.indexOf(":") + 1),
+  var removedDate  = date.substring(date.indexOf(":") + 1)
   return removedDate.substring(0, removedDate.indexOf('|'));
 }
 
