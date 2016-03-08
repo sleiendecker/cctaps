@@ -12,6 +12,8 @@ export default class BeerGrid extends React.Component {
         results={data}
         showFilter={true}
         columns={['name', 'newRating', 'abv', 'style', 'brewery']}
+        initialSort={'newRating'}
+        initialSortAscending={false}
         resultsPerPage={100} />
       </div>
     );
