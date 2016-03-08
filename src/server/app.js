@@ -39,17 +39,17 @@ MongoClient.connect(databaseURL, (err, db) => {
 
   // default route
   app.get('/', (req, res) => {
-    const cursor = db.collection('bars').find({});
+    const barsCursor = db.collection('bars').find({});
 
-    cursor.toArray((err, records) => {
+    barsCursor.toArray((err, records) => {
       if (err) {
         console.log('ERR: ', err);
         process.exit(1);
       }
 
-      const cursor2 = db.collection('beers').find({});
+      const beersCursor = db.collection('beers').find({});
 
-      cursor2.toArray((err2, records2) => {
+      beersCursor.toArray((err2, records2) => {
         res.render('views/index.ejs', {
           bars: records,
           beers: records2
