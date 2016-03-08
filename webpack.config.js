@@ -1,5 +1,7 @@
 module.exports = {
-  entry: [ './src/client/index.js' ],
+  entry: {
+    app: './src/client/index.js'
+  },
   progress: true,
   colors: true,
   module: {
@@ -22,7 +24,6 @@ module.exports = {
   },
   output: {
     path: __dirname + '/app',
-    publicPath: '/',
     filename: 'bundle.js'
   },
   devServer: {

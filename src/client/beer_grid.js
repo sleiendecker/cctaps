@@ -4,33 +4,11 @@ import Griddle from 'griddle-react';
 
 export default class BeerGrid extends React.Component {
   render () {
-    const self = this;
+    const data =  window.__INITIAL__STATE__.bars;
 
-    const fakeData =  [
-      {
-        "id": 0,
-        "name": "Mayer Leonard",
-        "city": "Kapowsin",
-        "state": "Hawaii",
-        "country": "United Kingdom",
-        "company": "Ovolo",
-        "favoriteNumber": 7
-      },
-      {
-        "id": 1,
-        "name": "Maye22r Leonard",
-        "city": "Kapowafdssin",
-        "state": "Hawaisadasi",
-        "country": "United Kasdingdom",
-        "company": "Ovolasdsao",
-        "favoriteNumber": 72
-      }
-    ];
-
-    console.log('am i getting here beer_grid');
     return (
       <div id="indexTest">
-        <Griddle results={fakeData} />
+        <Griddle results={data} />
       </div>
     );
   }
