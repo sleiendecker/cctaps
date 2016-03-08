@@ -16,17 +16,18 @@ brew upgrade node
 brew upgrade mongodb
 ```
 
-The following global packages must be installed
-```unix
-npm install -g gulp webpack webpack-devserver nodemon flow
-```
-
 Try to access the /data/db dir. If it does not exist, create one.
  ```unix
  ls /data/db
  mkdir /data
  mkdir /data/db
  ```
+
+# Global NPM Packages
+The following global packages must be installed
+```unix
+npm install -g gulp webpack webpack-devserver nodemon flow
+```
 
 # Installation
 
