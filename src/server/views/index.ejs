@@ -1,15 +1,22 @@
 <!DOCTYPE html>
-<html class="no-js">
+<html lang="en">
     <head>
         <meta charset="utf-8">
+        <meta name="language" content="english">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title></title>
-        <meta name="description" content="">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-
-        <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+        <meta name="CCtaps" content="">
+        <meta name="robots" content="noindex">
     </head>
     <body>
-      <h1>Beer page</h1>
+        <div id="app-container"></div>
+        <script>
+            window.__INITIAL__STATE__ = {
+                bars: <%- JSON.stringify(bars) %>,
+                beers: <%- JSON.stringify(beers) %>
+            }
+        </script>
+
+        <script src="bundle.js"></script>
     </body>
 </html>

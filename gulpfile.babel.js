@@ -8,7 +8,7 @@ import watch from 'gulp-watch';
 import gutil from 'gulp-util';
 import nodemon from 'gulp-nodemon';
 import server from 'gulp-live-server';
-import webpack from 'webpack-stream';
+import webpack from 'webpack';
 import WebpackDevServer from 'webpack-dev-server';
 import webpackConfig from './webpack.config';
 
@@ -41,10 +41,18 @@ gulp.task('flow', shell.task([
   'flow'
 ], { ignoreErrors: true }));
 
-gulp.task('webpack', () => {
-  return gulp.src('./src/client/index.js')
-    .pipe(webpack(webpackConfig))
-    .pipe(gulp.dest('./app'));
+gulp.task('webpack', cb => {
+  webpack(webpackConfig, (err, stats) => {
+
+    if(err) {
+      console.log('*** WEBFUDGEPACK MESSED UP :( ****');
+      console.log(err);
+      process.exit(1);
+    }
+
+    console.log('*** WEBFUDGEPACKING ***');
+    cb();
+  });
 });
 
 gulp.task('webpack-dev-server', () => {
@@ -63,7 +71,7 @@ gulp.task('webpack-dev-server', () => {
   });
 });
 
-// this will only be dev-server hopefully
+// @todo this will only be dev-server
 gulp.task('server', () => {
   nodemon({
     script: paths.serverDest,
@@ -72,15 +80,6 @@ gulp.task('server', () => {
       js: "node --harmony"
     },
     watch: ['./src/server']
-    // ignore: [
-    //   './src/client/',
-    //   './scripts/',
-    //   './node_modules',
-    //   './app',
-    //   './dump',
-    //   './gulpfile.babel.js',
-    //   './webpack.config.js'
-    // ]
   }).on('restart', () => {
     console.log('*** NODEMON RESTARTED ***');
   });
