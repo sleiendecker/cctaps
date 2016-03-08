@@ -1,11 +1,13 @@
-var HtmlWebpackPlugin = require('html-webpack-plugin');
-
 module.exports = {
-  entry: [ './src/client/index.js' ],
+  entry: {
+    app: './src/client/index.js'
+  },
+  progress: true,
+  colors: true,
   module: {
     loaders: [{
       test: /\.jsx?$/,
-      excluse: /node_modules/,
+      exclude: /node_modules/,
       loader: 'babel',
       query: {
         presets: ['react', 'es2015', 'stage-0']
@@ -13,7 +15,7 @@ module.exports = {
     }]
   },
   resolve: {
-    extensions: ['', '.js', '.jsx']
+    extensions: ['', '.js', '.html']
   },
   resolveLoader: {
     modulesDirectories: [
@@ -21,16 +23,9 @@ module.exports = {
     ]
   },
   output: {
-    path: __dirname,
-    publicPath: '/',
+    path: __dirname + '/app',
     filename: 'bundle.js'
   },
-  plugins: [new HtmlWebpackPlugin({
-    title: 'cctaps',
-    template: './src/client/index.html',
-    favicon: './src/server/favicon.ico',
-    inject: 'body'
-  })],
   devServer: {
     contentBase: './app'
   }
