@@ -46,9 +46,15 @@ MongoClient.connect(databaseURL, (err, db) => {
         process.exit(1);
       }
 
-      res.render('views/index.ejs', {
-        bars: records
+      const cursor2 = db.collection('beers').find({});
+
+      cursor2.toArray((err2, records2) => {
+        res.render('views/index.ejs', {
+          bars: records,
+          beers: records2
+        });
       });
+
     });
   });
 
