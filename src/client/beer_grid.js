@@ -11,8 +11,8 @@ export default class BeerGrid extends React.Component {
         <Griddle
         results={data}
         showFilter={true}
-        columns={['name', 'newRating', 'abv', 'style', 'brewery']}
-        initialSort={'newRating'}
+        columns={['name', 'rating', 'abv', 'style', 'brewery']}
+        initialSort={'rating'}
         initialSortAscending={false}
         resultsPerPage={100} />
       </div>

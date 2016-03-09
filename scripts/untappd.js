@@ -71,10 +71,6 @@ function getUrl(beerName, cb) {
   });
 }
 
-function formatRating(rating){
-  // (Avg * 20 + 10) is almost identical to ba rating
-  return  Math.floor( rating * 20 + 10 );
-}
 
 function buildObject(beer, bar, url, cb){
   var beer = beer[0];
@@ -84,9 +80,8 @@ function buildObject(beer, bar, url, cb){
     bar : bar,
     brewery : beer.brewery_name,
     name : beer.beer_name,
-    abv : beer.beer_abv,
-    rating: beer.ba_score,
-    newRating: formatRating(beer.rAvg),
+    abv : parseFloat(beer.beer_abv.replace('| ','')) + '%',
+    rating: Math.floor( beer.rAvg * 20 + 10 ),
     style : beer.beer_style,
     url: url
   }
@@ -216,4 +211,4 @@ var processBeers = function(callback){
 
 processBeers(function(err, beers){
   console.log('Beers ', beers);
-})
+});
