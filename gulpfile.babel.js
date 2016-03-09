@@ -28,7 +28,7 @@ const paths = {
 let express;
 
 gulp.task('default', cb => {
-  run('server', 'build', 'watch-webpack', cb);
+  run('server', 'build', 'watch-webpack', 'watch-sass', cb);
 });
 
 gulp.task('build', cb => {
@@ -88,6 +88,11 @@ gulp.task('webpack-dev-server', () => {
 
 gulp.task('watch-webpack', cb => {
   gulp.watch(['src/client/**/*.*'], ['webpack']);
+  cb();
+});
+
+gulp.task('watch-sass', cb => {
+  gulp.watch(['src/sass/**/*.*'], ['sass']);
   cb();
 });
 
