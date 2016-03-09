@@ -72,6 +72,10 @@ function getUrl(beerName, cb) {
 }
 
 
+function formatAbv(abv){
+  return ;
+}
+
 function buildObject(beer, bar, url, cb){
   var beer = beer[0];
   var dbBeer = {
