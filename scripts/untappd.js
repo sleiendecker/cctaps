@@ -6,10 +6,12 @@ var MongoServer = "mongodb://localhost:27017/cctaps";
 var ObjectID = require('mongodb').ObjectID;
 
 // Dependencies
-var async   = require('async'),
-cheerio = require('cheerio'),
-request = require('request'),
-bars     = require('./sources.js').bars;
+var async = require('async'),
+cheerio   = require('cheerio'),
+request   = require('request'),
+sources   = require('./sources.js'),
+bars      = sources.bars,
+ratingUrl = sources.ratingUrl;
 
 var ba  = require('./ba_api.js');
 
@@ -17,10 +19,8 @@ var ba  = require('./ba_api.js');
 var addToCollection = function(collection, object, cb){
   if (object.rating === '-'){
     console.log('No rating')
-  }else{
-    console.log('Found rating: ', object.rating);
   }
-  console.log('\n\nBeer: ' + object.name + ' --- Rating: ' + object.rating);
+  console.log('\nBeer: ' + object.name + 'Rating: ' + object.rating);
   var mongoOpts = {
     set: {$set : object},
     upsert: { upsert: true}
@@ -58,7 +58,6 @@ var connectToDb = function(err, beerObject, lastUpdated, cb){
 function getInfo(url, cb){
   ba.beerPage(url, function(beerInfo) {
     // pass in beer's url to get info
-    console.log('beerInfo', beerInfo);
     beerInfo = JSON.parse(beerInfo);
       cb(null, beerInfo);
   });
@@ -69,11 +68,6 @@ function getUrl(beerName, cb) {
   ba.beerURL(beerName, function(url) {
     cb(null, url);
   });
-}
-
-
-function formatAbv(abv){
-  return ;
 }
 
 function buildObject(beer, bar, url, cb){
@@ -87,26 +81,40 @@ function buildObject(beer, bar, url, cb){
     abv : parseFloat(beer.beer_abv.replace('| ','')) + '%',
     rating: Math.floor( beer.rAvg * 20 + 10 ),
     style : beer.beer_style,
-    url: url
+    url: ratingUrl + url
   }
   cb(null, dbBeer)
 }
 
-function checkIfBarExists(bar, db, cb){
-  db.collection('bars').findOne({'bar': bar.name}, function(err, doc){
-    cb(doc);
+function checkIfBarExists(bar, cb){
+  MongoClient.connect(MongoServer, function(err, db) {
+    var collection = db.collection("bars");
+    collection.findOne({'name': bar.name}, function(err, dbBar){
+      if(dbBar === null){
+        bar = {name: bar.name, url: bar.url, lastUpdated: null, beers: []};
+        console.log('Couldn\'t find ', bar.name, '\nAdding to db');
+        collection.insert(bar);
+      }else{
+        collection.update({name: bar.name }, {$set: {beers: []}})
+      }
+      bar.beers = [];
+      db.close();
+      cb(bar);
+    });
+
   });
 }
 
-function checkLastUpdated(bar, db, newBar, cb){
-  var upToDate;
-  db.collection('bars').findOne({'name': bar.name}, function(err, doc){
-    if (doc.lastUpdated < bar.lastUpdated || (newBar)) {
-      upToDate = false;
-    } else {
-      upToDate = true;
-    }
-    cb(upToDate);
+var updateBarLastUpdated = function(bar, lastUpdated, cb){
+  MongoClient.connect(MongoServer, function(err, db) {
+    var collection = db.collection('bars');
+    collection.findOne({'name': bar.name}, function(err, dbBar){
+      if (dbBar.lastUpdated === null){
+        collection.update({name: bar.name }, {$set: {lastUpdated: lastUpdated}})
+      }
+      db.close();
+      cb(bar);
+    });
   });
 }
 
@@ -120,69 +128,35 @@ function parseDate(date){
  * array of beer strings.
  */
 function getBeers(bar, cb){
-  var newBar;
   console.log('getting beers for bar: ' + bar.name);
   request(bar.url, function (err, res, body) {
     var $             = cheerio.load(body),
     beers             = $(bar.css),
-    beersFormatted    = [],
     rawUpdated        = $('.pure-u-1-2 span').text();
 
     bar.lastUpdated   = parseDate(rawUpdated);
     $(beers).each(function(i, beer) {
-      beersFormatted.push($(beer).text().trim());
+      bar.beers.push($(beer).text().trim());
+    });
+      cb(null, bar.beers, bar.lastUpdated);
+
     });
 
-    var dbBar = {
-      name: bar.name,
-      lastUpdated: bar.lastUpdated,
-      beers: []
-    }
-
-    MongoClient.connect(MongoServer, function(err, db) {
-      checkIfBarExists(dbBar, db, function(status) {
-        // If the bar doesn't exist in the db
-        if (status === null){
-          console.log('bar does not exist!');
-          newBar = true;
-          var collection = db.collection("bars");
-          collection.insert(dbBar);
-        }
-        db.close();
-      });
-    });
-
-    MongoClient.connect(MongoServer, function(err, db) {
-      checkLastUpdated(bar, db, newBar, function(res) {
-        db.close();
-        if (res){
-          console.log('Up to date');
-        } else{
-          console.log('Updating')
-          cb(null, beersFormatted, bar.lastUpdated);
-        }
-      });
-    });
-  });
-}
-
+  };
 
 function beerWaterfall(bar, beer, lastUpdated, cb){
   async.waterfall([
     function(callback){
-      console.log('Getting url');
       getUrl(beer, function(err, url){
         callback(err, url);
       });
     },
     function(url, callback){
-      console.log('Getting info');
       getInfo(url, function(err, beerInfo){
         callback(err, beerInfo, url);
       })
     },
     function(beerInfo, url, callback){
-      console.log('Building object');
       buildObject(beerInfo, bar.name, url, function (err, dbBeer) {
         callback(err, dbBeer);
       })
@@ -195,16 +169,20 @@ function beerWaterfall(bar, beer, lastUpdated, cb){
 
 var processBeers = function(callback){
   async.forEach(bars, function(bar, callback){
-    getBeers(bar, function(err, beers, lastUpdated) {
-      async.forEach(beers, function(beer, callback){
-        console.log('Scraping: ', bar.name);
-        beerWaterfall(bar, beer, lastUpdated, function(err, res){
-          callback();
-        })
-      }, function(err){
-        callback();
+    checkIfBarExists(bar, function(bar){
+      getBeers(bar, function(err, beers, lastUpdated) {
+        updateBarLastUpdated(bar, lastUpdated, function(bar){
+          async.forEach(beers, function(beer, callback){
+            beerWaterfall(bar, beer, lastUpdated, function(err, res){
+              callback();
+            });
+          }, function(err){
+            callback();
+          });
+        });
       });
-    });
+    })
+
 
   }, function(err){
     if (err){
