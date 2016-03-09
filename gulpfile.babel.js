@@ -4,7 +4,11 @@ import gulp from 'gulp';
 import shell from 'gulp-shell';
 import rimraf from 'rimraf';
 import run from 'run-sequence';
+import plumber from 'gulp-plumber';
 import watch from 'gulp-watch';
+import concat from 'gulp-concat';
+import sass from 'gulp-sass';
+import minifyCss from 'gulp-minify-css';
 import gutil from 'gulp-util';
 import nodemon from 'gulp-nodemon';
 import server from 'gulp-live-server';
@@ -16,7 +20,9 @@ const paths = {
   serverJS    : ['./src/server/**/*.js'],
   serverDest  : './src/server/index.js',
   clientJS    : ['./src/client/**/*.js'],
-  clientDest  : './app'
+  clientDest  : './app',
+  sassSrc     : ['./src/sass/**/*.scss'],
+  sassDest    : './app'
 };
 
 let express;
@@ -26,7 +32,7 @@ gulp.task('default', cb => {
 });
 
 gulp.task('build', cb => {
-  run('clean-client', 'webpack', cb);
+  run('clean-client', 'webpack', 'sass', cb);
 });
 
 gulp.task('build-dev', cb => {
@@ -40,6 +46,16 @@ gulp.task('clean-client', cb => {
 gulp.task('flow', shell.task([
   'flow'
 ], { ignoreErrors: true }));
+
+gulp.task('sass', cb => {
+  gulp.src(paths.sassSrc)
+  .pipe(plumber())
+  .pipe(sass())
+  .pipe(concat('style.css'))
+  .pipe(minifyCss())
+  .pipe(gulp.dest(paths.sassDest))
+  cb();
+});
 
 gulp.task('webpack', cb => {
   webpack(webpackConfig, (err, stats) => {
