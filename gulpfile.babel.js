@@ -22,7 +22,7 @@ const paths = {
 let express;
 
 gulp.task('default', cb => {
-  run('server', 'build', cb);
+  run('server', 'build', 'watch-webpack', cb);
 });
 
 gulp.task('build', cb => {
@@ -60,15 +60,19 @@ gulp.task('webpack-dev-server', () => {
 
   // todo: verify this
   return new WebpackDevServer(compiler, {
-    contentBase: './build/',
-    publicPath: webpackConfig.output.publicPath,
+    publicPath: 'http://localhost:3000/',
     hot: true,
     host: 'localhost'
-  }).listen(8080, 'localhost', err => {
+  }).listen(3000, 'localhost', err => {
     if (err) throw new gutil.PluginError('webpack-dev-server', err);
 
     gutil.log('[webpack-dev-server]', 'http://localhost:8080/webpack-dev-server/index.html');
   });
+});
+
+gulp.task('watch-webpack', cb => {
+  gulp.watch(['src/client/**/*.*'], ['webpack']);
+  cb();
 });
 
 // @todo this will only be dev-server
