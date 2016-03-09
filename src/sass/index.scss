@@ -1,3 +1,11 @@
+@import 'bootstrap/_bootstrap';
+
 body {
-  background: gainsboro;
+  background-color: #ffaa00;
+  background-size: cover;
+
+  tbody, td, tr {
+    background-color: #ffaa00;
+    background-size: cover;
+  }
 }

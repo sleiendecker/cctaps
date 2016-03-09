@@ -71,10 +71,6 @@ function getUrl(beerName, cb) {
   });
 }
 
-function formatRating(rating){
-  // (Avg * 20 + 10) is almost identical to ba rating
-  return  Math.floor( rating * 20 + 10 );
-}
 
 function formatAbv(abv){
   return ;
@@ -89,8 +85,7 @@ function buildObject(beer, bar, url, cb){
     brewery : beer.brewery_name,
     name : beer.beer_name,
     abv : parseFloat(beer.beer_abv.replace('| ','')) + '%',
-    rating: beer.ba_score,
-    newRating: Math.floor( beer.rAvg * 20 + 10 ),
+    rating: Math.floor( beer.rAvg * 20 + 10 ),
     style : beer.beer_style,
     url: url
   }
