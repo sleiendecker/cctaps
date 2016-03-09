@@ -76,6 +76,10 @@ function formatRating(rating){
   return  Math.floor( rating * 20 + 10 );
 }
 
+function formatAbv(abv){
+  return ;
+}
+
 function buildObject(beer, bar, url, cb){
   var beer = beer[0];
   var dbBeer = {
@@ -84,9 +88,9 @@ function buildObject(beer, bar, url, cb){
     bar : bar,
     brewery : beer.brewery_name,
     name : beer.beer_name,
-    abv : beer.beer_abv,
+    abv : parseFloat(beer.beer_abv.replace('| ','')) + '%',
     rating: beer.ba_score,
-    newRating: formatRating(beer.rAvg),
+    newRating: Math.floor( beer.rAvg * 20 + 10 ),
     style : beer.beer_style,
     url: url
   }
@@ -216,4 +220,4 @@ var processBeers = function(callback){
 
 processBeers(function(err, beers){
   console.log('Beers ', beers);
-})
+});
