@@ -11,7 +11,8 @@ export default class BeerGrid extends React.Component {
     };
 
     return (
-      <div id="indexTest">
+      <div id="beerGrid">
+        <h4>Sample Title</h4>
         <Griddle
           results={data}
           showFilter={true}
