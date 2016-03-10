@@ -1,11 +1,20 @@
 @import 'bootstrap/_bootstrap';
 
 body {
-  background-color: #ffaa00;
-  background-size: cover;
+  background-color: #80AA55;
 
-  tbody, td, tr {
-    background-color: #ffaa00;
-    background-size: cover;
+  tbody {
+    tr {
+      td:first-child {
+        span:last-child {
+          color: blue;
+          text-decoration: underline;
+        }
+      }
+    }
+  }
+
+  .griddle-footer {
+    display: none;
   }
 }
