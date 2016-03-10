@@ -7,7 +7,7 @@ export default class BeerGrid extends React.Component {
     const data =  window.__INITIAL__STATE__.beers;
 
     const onRowClick = (gridRow, event) => {
-      window.location = 'http://beeradvocate.com' + gridRow.props.data.url;
+      window.location = gridRow.props.data.url;
     };
 
     return (
