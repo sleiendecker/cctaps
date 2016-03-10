@@ -20,7 +20,8 @@ var addToCollection = function(collection, object, cb){
   if (object.rating === '-'){
     console.log('No rating')
   }
-  console.log('\nBeer: ' + object.name + 'Rating: ' + object.rating);
+  // console.log('\n\nBar: ' + object.bar +
+  //             '\nBeer: ' + object.name +' (' + object.rating + ')');
   var mongoOpts = {
     set: {$set : object},
     upsert: { upsert: true}
@@ -55,19 +56,35 @@ var connectToDb = function(err, beerObject, lastUpdated, cb){
   cb();
 }
 
+function getUrl(beerName, cb) {
+  // pass in beer's name to get url
+  ba.beerURL(beerName, function(url, err) {
+    cb(null, url);
+  });
+}
+
 function getInfo(url, cb){
   ba.beerPage(url, function(beerInfo) {
     // pass in beer's url to get info
     beerInfo = JSON.parse(beerInfo);
-      cb(null, beerInfo);
+    cb(null, beerInfo);
   });
 }
 
-function getUrl(beerName, cb) {
-  // pass in beer's name to get url
-  ba.beerURL(beerName, function(url) {
-    cb(null, url);
-  });
+function formatRating(rating){
+  if (rating === null){
+    return null
+  } else {
+    return Math.floor( rating * 20 + 10 )
+  }
+}
+
+function formatAbv(abv){
+  if (abv === null){
+    return null
+  } else {
+    return parseFloat(abv.replace('| ','')) + '%'
+  }
 }
 
 function buildObject(beer, bar, url, cb){
@@ -78,8 +95,8 @@ function buildObject(beer, bar, url, cb){
     bar : bar,
     brewery : beer.brewery_name,
     name : beer.beer_name,
-    abv : parseFloat(beer.beer_abv.replace('| ','')) + '%',
-    rating: Math.floor( beer.rAvg * 20 + 10 ),
+    abv : formatAbv(beer.beer_abv),
+    rating: formatRating(beer.rAvg),
     style : beer.beer_style,
     url: ratingUrl + url
   }
@@ -144,6 +161,21 @@ function getBeers(bar, cb){
 
   };
 
+function buildMissingBeerObject(beer){
+  console.log('Building object for : ', beer);
+  var obj = [{
+      // Create ObjectID to be added to its bar
+      brewery_name : null,
+      beer_name : beer,
+      beer_abv : null,
+      rAvg: null,
+      beer_style : null
+    }]
+  console.log('returning object: ', obj);
+  console.log('\n\nreturning brewery_name: ', obj.brewery_name);
+  return obj;
+}
+
 function beerWaterfall(bar, beer, lastUpdated, cb){
   async.waterfall([
     function(callback){
@@ -152,14 +184,19 @@ function beerWaterfall(bar, beer, lastUpdated, cb){
       });
     },
     function(url, callback){
-      getInfo(url, function(err, beerInfo){
-        callback(err, beerInfo, url);
-      })
+      if (url === beer){
+        callback(null, buildMissingBeerObject(url), null);
+      } else{
+        getInfo(url, function(err, beerInfo){
+          callback(err, beerInfo, url);
+        });
+      }
+
     },
     function(beerInfo, url, callback){
       buildObject(beerInfo, bar.name, url, function (err, dbBeer) {
         callback(err, dbBeer);
-      })
+      });
     }
   ],
   function(err, data){
