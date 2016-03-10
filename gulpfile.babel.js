@@ -25,18 +25,26 @@ const paths = {
   sassDest    : './app'
 };
 
-let express;
-
-gulp.task('default', cb => {
-  run('server', 'build', 'watch-webpack', 'watch-sass', cb);
-});
+/**
+ * Server commands
+ */
 
 gulp.task('build', cb => {
   run('clean-client', 'webpack', 'sass', cb);
 });
+gulp.task('deploy', shell.task([ 'forever start -c "node --harmony" src/server/index.js' ]));
+gulp.task('stop', shell.task([ 'forever stopall' ]));
+
+/**
+ * Development tasks
+ */
+
+gulp.task('default', cb => {
+  run('build-dev', cb);
+});
 
 gulp.task('build-dev', cb => {
-  run('clean-client', 'flow', 'webpack-dev-server', cb);
+  run('server', 'build', 'watch-webpack', 'watch-sass', cb);
 });
 
 gulp.task('clean-client', cb => {
@@ -61,12 +69,12 @@ gulp.task('webpack', cb => {
   webpack(webpackConfig, (err, stats) => {
 
     if(err) {
-      console.log('*** WEBFUDGEPACK MESSED UP :( ****');
+      console.log('*** WEBPACK MESSED UP :( ****');
       console.log(err);
       process.exit(1);
     }
 
-    console.log('*** WEBFUDGEPACKING ***');
+    console.log('*** WEBPACKING ***');
     cb();
   });
 });
@@ -86,17 +94,6 @@ gulp.task('webpack-dev-server', () => {
   });
 });
 
-gulp.task('watch-webpack', cb => {
-  gulp.watch(['src/client/**/*.*'], ['webpack']);
-  cb();
-});
-
-gulp.task('watch-sass', cb => {
-  gulp.watch(['src/sass/**/*.*'], ['sass']);
-  cb();
-});
-
-// @todo this will only be dev-server
 gulp.task('server', () => {
   nodemon({
     script: paths.serverDest,
@@ -108,4 +105,18 @@ gulp.task('server', () => {
   }).on('restart', () => {
     console.log('*** NODEMON RESTARTED ***');
   });
+});
+
+/**
+ * Watch tasks
+ */
+
+gulp.task('watch-webpack', cb => {
+  gulp.watch(['src/client/**/*.*'], ['webpack']);
+  cb();
+});
+
+gulp.task('watch-sass', cb => {
+  gulp.watch(['src/sass/**/*.*'], ['sass']);
+  cb();
 });

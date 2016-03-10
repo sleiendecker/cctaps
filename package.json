@@ -3,7 +3,9 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node --harmony ./src/server/index.js"
+    "start": "gulp deploy",
+    "build": "gulp build",
+    "stop": "gulp stop"
   },
   "babel": {
     "presets": [

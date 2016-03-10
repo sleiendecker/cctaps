@@ -26,7 +26,7 @@ Try to access the /data/db dir. If it does not exist, create one.
 # Global NPM Packages
 Install required global packages using the following.
 ```unix
-npm install -g gulp webpack webpack-devserver nodemon flow
+npm install -g gulp webpack webpack-devserver nodemon flow forever
 ```
 
 # Installation
