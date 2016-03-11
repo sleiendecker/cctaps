@@ -1,1 +1,1 @@
-{ "options" : { "create" : "bars" }, "indexes" : [ { "v" : 1, "key" : { "_id" : 1 }, "ns" : "cctaps.bars", "name" : "_id_" } ] }
+{"options":{},"indexes":[{"v":1,"key":{"_id":1},"name":"_id_","ns":"cctaps.bars"}]}

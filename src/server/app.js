@@ -37,6 +37,27 @@ MongoClient.connect(databaseURL, (err, db) => {
 
   console.log('Loaded the database');
 
+  app.get('/test', (req, res) => {
+    const barsCursor = db.collection('bars').find({});
+
+    barsCursor.toArray((err, records) => {
+      if (err) {
+        console.log('ERR: ', err);
+        process.exit(1);
+      }
+
+      const beersCursor = db.collection('beers').find({});
+
+      beersCursor.toArray((err2, records2) => {
+        res.render('views/index.ejs', {
+          bars: records,
+          beers: records2
+        });
+      });
+
+    });
+  });
+
   // default route
   app.get('/', (req, res) => {
     const barsCursor = db.collection('bars').find({});
