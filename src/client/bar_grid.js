@@ -11,6 +11,7 @@ export default class BarGrid extends React.Component {
       axios.get(`/api/${gridRow.props.data._id}`)
         .then((response) => {
           window.__INITIAL__STATE__.beers = response.data.records;
+          window.__INITIAL__STATE__.currentBar = gridRow.props.data.name;
           window.location.href = `${window.location.origin}/#/bar/${gridRow.props.data._id}`;
         })
         .catch((response) => {

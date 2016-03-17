@@ -4,7 +4,8 @@ import Griddle from 'griddle-react';
 
 export default class BeerGrid extends React.Component {
   render () {
-    const data =  window.__INITIAL__STATE__.beers;
+    const beerData = window.__INITIAL__STATE__.beers;
+    const barTitle = window.__INITIAL__STATE__.currentBar;
 
     const onRowClick = (gridRow, event) => {
       window.location = gridRow.props.data.url;
@@ -12,9 +13,9 @@ export default class BeerGrid extends React.Component {
 
     return (
       <div id="beerGrid">
-        <h4>Sample Title</h4>
+        <h4>{barTitle}</h4>
         <Griddle
-          results={data}
+          results={beerData}
           showFilter={true}
           columns={['name', 'rating', 'abv', 'style', 'brewery']}
           initialSort={'rating'}
