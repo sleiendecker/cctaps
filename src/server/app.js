@@ -37,27 +37,6 @@ MongoClient.connect(databaseURL, (err, db) => {
 
   console.log('Loaded the database');
 
-  app.get('/test', (req, res) => {
-    const barsCursor = db.collection('bars').find({});
-
-    barsCursor.toArray((err, records) => {
-      if (err) {
-        console.log('ERR: ', err);
-        process.exit(1);
-      }
-
-      const beersCursor = db.collection('beers').find({});
-
-      beersCursor.toArray((err2, records2) => {
-        res.render('views/index.ejs', {
-          bars: records,
-          beers: records2
-        });
-      });
-
-    });
-  });
-
   // default route
   app.get('/', (req, res) => {
     const barsCursor = db.collection('bars').find({});
@@ -72,23 +51,34 @@ MongoClient.connect(databaseURL, (err, db) => {
 
       beersCursor.toArray((err2, records2) => {
         res.render('views/index.ejs', {
-          bars: records,
-          beers: records2
+          bars: records
         });
       });
 
     });
   });
 
-  app.get('/api/:id', (req, res) => {
-    const cursor = db.collection('beers').find({_id: ObjectID(req.params.id)}); // id
-    console.log(cursor);
-    cursor.toArray((err, records) => {
+  app.get('/api/:barID', (req, res) => {
+    const cursor = db.collection('bars').find({_id: ObjectID(req.params.barID)});
+    let beerIDs = [];
+
+    // getting bar
+    cursor.toArray((err, barRecords) => {
       if (err) {
         console.log('ERR: ', err);
         process.exit(1);
       }
-      res.send({ records });
+
+      // transforming bars' beers into mongo IDs
+      for (let i = 0; i < barRecords[0].beers.length; i++) {
+        beerIDs.push(ObjectID(barRecords[0].beers[i]));
+      }
+
+      // send beers from specified bar to client
+      const cursor2 = db.collection('beers').find({_id: {$in: beerIDs}});
+      cursor2.toArray((err, records) => {
+        res.send({ records });
+      });
     });
   });
 
