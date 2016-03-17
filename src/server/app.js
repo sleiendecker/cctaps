@@ -37,27 +37,6 @@ MongoClient.connect(databaseURL, (err, db) => {
 
   console.log('Loaded the database');
 
-  app.get('/test', (req, res) => {
-    const barsCursor = db.collection('bars').find({});
-
-    barsCursor.toArray((err, records) => {
-      if (err) {
-        console.log('ERR: ', err);
-        process.exit(1);
-      }
-
-      const beersCursor = db.collection('beers').find({});
-
-      beersCursor.toArray((err2, records2) => {
-        res.render('views/index.ejs', {
-          bars: records,
-          beers: records2
-        });
-      });
-
-    });
-  });
-
   // default route
   app.get('/', (req, res) => {
     const barsCursor = db.collection('bars').find({});
@@ -72,8 +51,7 @@ MongoClient.connect(databaseURL, (err, db) => {
 
       beersCursor.toArray((err2, records2) => {
         res.render('views/index.ejs', {
-          bars: records,
-          beers: records2
+          bars: records
         });
       });
 
@@ -96,6 +74,7 @@ MongoClient.connect(databaseURL, (err, db) => {
         beerIDs.push(ObjectID(barRecords[0].beers[i]));
       }
 
+      // send beers from specified bar to client
       const cursor2 = db.collection('beers').find({_id: {$in: beerIDs}});
       cursor2.toArray((err, records) => {
         res.send({ records });

@@ -8,17 +8,12 @@ export default class BarGrid extends React.Component {
     const data =  window.__INITIAL__STATE__.bars;
 
     const onRowClick = (gridRow, event) => {
-      console.log(gridRow.props.data);
       axios.get(`/api/${gridRow.props.data._id}`)
-        .then(function (response) {
-          console.log('success');
-          console.log(response);
-          window.__INITIAL__STATE__.beers = response.data.records2;
-          this.setState({
-            page: 'beers'
-          });
+        .then((response) => {
+          window.__INITIAL__STATE__.beers = response.data.records;
+          window.location.href = `${window.location.origin}/#/bar/${gridRow.props.data._id}`;
         })
-        .catch(function (response) {
+        .catch((response) => {
           console.log('failure');
           console.log(response);
         });
