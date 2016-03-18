@@ -67,7 +67,6 @@ gulp.task('sass', cb => {
 
 gulp.task('webpack', cb => {
   webpack(webpackConfig, (err, stats) => {
-
     if(err) {
       console.log('*** WEBPACK MESSED UP :( ****');
       console.log(err);

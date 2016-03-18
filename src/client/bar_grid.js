@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router';
 import ReactDOM from 'react-dom';
 import Griddle from 'griddle-react';
 import axios from 'axios';
@@ -6,6 +7,14 @@ import axios from 'axios';
 export default class BarGrid extends React.Component {
   render () {
     const data =  window.__INITIAL__STATE__.bars;
+
+    const LinkComponent = React.createClass({
+      render: function () {
+        console.log(this);
+        const url = `bar/${this.props.rowData._id}`;
+        return <Link to={url}>{this.props.data}</Link>
+      }
+    });
 
     const onRowClick = (gridRow, event) => {
       axios.get(`/api/${gridRow.props.data._id}`)
@@ -20,15 +29,29 @@ export default class BarGrid extends React.Component {
         });
     };
 
+    const metadata = [
+      {
+        columnName: 'name',
+        displayName: 'Name',
+        customComponent: LinkComponent
+      },
+      {
+        columnName: 'lastUpdated',
+        displayName: 'Last Updated'
+      }
+    ];
+
     return (
       <div id="barGrid">
-        <h4>Which bar</h4>
         <Griddle
           results={data}
           showFilter={true}
+          filterPlaceholderText={'Search for bars (ex. Max\'s Taphouse): '}
+          noDataMessage={'No bars found'}
           columns={['name', 'lastUpdated']}
+          columnMetadata={metadata}
           initialSort={'name'}
-          onRowClick={onRowClick}
+          // onRowClick={onRowClick}
           resultsPerPage={100}
         />
       </div>
