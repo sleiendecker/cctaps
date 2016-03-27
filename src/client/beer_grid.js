@@ -1,15 +1,30 @@
 import React from 'react';
+import axios from 'axios';
 import ReactDOM from 'react-dom';
 import Griddle from 'griddle-react';
 
 export default class BeerGrid extends React.Component {
-  render () {
-    const beerData = window.__INITIAL__STATE__.beers;
-    const barTitle = window.__INITIAL__STATE__.currentBar;
 
+  componentDidMount () {
+    axios.get(`/api/${encodeURIComponent(this.props.params.barID)}`)
+      .then((response) => {
+        console.log('response', response);
+        this.beerData = response.data.beers;
+        this.barTitle = response.data.bar;
+      })
+      .catch((response) => {
+        console.log('failure');
+        console.log(response);
+      });
+  }
+
+  render () {
     const onRowClick = (gridRow, event) => {
       window.location = gridRow.props.data.url;
     };
+
+    const beerData = this.beerData;
+    const barTitle = this.barTitle;
 
     const metadata = [
       {
@@ -33,6 +48,8 @@ export default class BeerGrid extends React.Component {
         displayName: 'Brewery'
       }
     ];
+
+    console.log(this.barTitle);
 
     return (
       <div id="beerGrid">

@@ -1,7 +1,11 @@
+var webpack = require('webpack');
+
 module.exports = {
-  entry: {
-    app: './src/client/index.js'
-  },
+  entry: [
+    'webpack-dev-server/client?http://localhost:3001',
+    'webpack/hot/only-dev-server',
+    './src/client/index.js'
+  ],
   progress: true,
   colors: true,
   module: {
@@ -26,7 +30,7 @@ module.exports = {
     path: __dirname + '/app',
     filename: 'bundle.js'
   },
-  devServer: {
-    contentBase: './app'
-  }
+  plugins: [
+    new webpack.HotModuleReplacementPlugin()
+  ]
 }

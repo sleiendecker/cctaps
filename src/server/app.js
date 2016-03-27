@@ -23,7 +23,6 @@ app.set('view engine', 'ejs');
 app.use(express.static(path.join(__dirname, '../../app')));
 app.set('views', path.join(__dirname));
 app.use(favicon(path.join(__dirname, '/', 'favicon.ico')));
-app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
@@ -58,8 +57,8 @@ MongoClient.connect(databaseURL, (err, db) => {
     });
   });
 
-  app.get('/api/:barID', (req, res) => {
-    const cursor = db.collection('bars').find({_id: ObjectID(req.params.barID)});
+  app.get('/api/:barName', (req, res) => {
+    const cursor = db.collection('bars').find({name: decodeURIComponent(req.params.barName)});
     let beerIDs = [];
 
     // getting bar
@@ -77,7 +76,7 @@ MongoClient.connect(databaseURL, (err, db) => {
       // send beers from specified bar to client
       const cursor2 = db.collection('beers').find({_id: {$in: beerIDs}});
       cursor2.toArray((err, records) => {
-        res.send({ records });
+        res.send({ beers: records, bar: barRecords[0].name });
       });
     });
   });

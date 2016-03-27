@@ -44,7 +44,7 @@ gulp.task('default', cb => {
 });
 
 gulp.task('build-dev', cb => {
-  run('server', 'build', 'watch-webpack', 'watch-sass', cb);
+  run('server', 'build', 'webpack-dev-server', 'watch-sass', cb);
 });
 
 gulp.task('clean-client', cb => {
@@ -83,13 +83,19 @@ gulp.task('webpack-dev-server', () => {
 
   // todo: verify this
   return new WebpackDevServer(compiler, {
-    publicPath: 'http://localhost:3000/',
+    proxy: {
+      '*': 'http://localhost:3000'
+    },
+    stats: {
+      colors: true
+    },
     hot: true,
-    host: 'localhost'
-  }).listen(3000, 'localhost', err => {
+    historyApiFallback: true,
+    host: '0.0.0.0'
+  }).listen(3001, 'localhost', err => {
     if (err) throw new gutil.PluginError('webpack-dev-server', err);
 
-    gutil.log('[webpack-dev-server]', 'http://localhost:8080/webpack-dev-server/index.html');
+    gutil.log('[webpack-dev-server]', 'http://localhost:3000/webpack-dev-server/index.html');
   });
 });
 

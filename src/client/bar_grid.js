@@ -10,8 +10,7 @@ export default class BarGrid extends React.Component {
 
     const LinkComponent = React.createClass({
       render: function () {
-        console.log(this);
-        const url = `bar/${this.props.rowData._id}`;
+        const url = `bar/${encodeURIComponent(this.props.rowData.name)}`;
         return <Link to={url}>{this.props.data}</Link>
       }
     });
