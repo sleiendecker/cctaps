@@ -17,11 +17,10 @@ var ba  = require('./ba_api.js');
 
 
 var addToCollection = function(collection, object, cb){
+  console.log('Adding object: ', object);
   if (object.rating === '-'){
     console.log('No rating')
   }
-  // console.log('\n\nBar: ' + object.bar +
-  //             '\nBeer: ' + object.name +' (' + object.rating + ')');
   var mongoOpts = {
     set: {$set : object},
     upsert: { upsert: true}
@@ -80,10 +79,12 @@ function formatRating(rating){
 }
 
 function formatAbv(abv){
+  console.log('formatting ABV: ', abv);
   if (abv === null){
     return null
   } else {
-    return parseFloat(abv.replace('| ','')) + '%'
+    // return parseFloat(abv.replace('| ','')) + '%'
+    return abv + '%'
   }
 }
 
@@ -207,6 +208,7 @@ function beerWaterfall(bar, beer, lastUpdated, cb){
 var processBeers = function(callback){
   async.forEach(bars, function(bar, callback){
     checkIfBarExists(bar, function(bar){
+      console.log('Found bar: ', bar);
       getBeers(bar, function(err, beers, lastUpdated) {
         updateBarLastUpdated(bar, lastUpdated, function(bar){
           async.forEach(beers, function(beer, callback){
