@@ -15,6 +15,7 @@ import server from 'gulp-live-server';
 import webpack from 'webpack';
 import WebpackDevServer from 'webpack-dev-server';
 import webpackConfig from './webpack.config';
+import webpackDevConfig from './webpack.config.dev';
 
 const paths = {
   serverJS    : ['./src/server/**/*.js'],
@@ -44,7 +45,7 @@ gulp.task('default', cb => {
 });
 
 gulp.task('build-dev', cb => {
-  run('server', 'build', 'webpack-dev-server', 'watch-sass', cb);
+  run('server', 'clean-client', 'sass', 'webpack', 'webpack-dev-server', 'watch-sass', cb);
 });
 
 gulp.task('clean-client', cb => {
@@ -79,7 +80,7 @@ gulp.task('webpack', cb => {
 });
 
 gulp.task('webpack-dev-server', () => {
-  var compiler = webpack(webpackConfig);
+  var compiler = webpack(webpackDevConfig);
 
   // todo: verify this
   return new WebpackDevServer(compiler, {

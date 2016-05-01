@@ -1,9 +1,5 @@
-var webpack = require('webpack');
-
 module.exports = {
   entry: [
-    'webpack-dev-server/client?http://localhost:3001',
-    'webpack/hot/only-dev-server',
     './src/client/index.js'
   ],
   progress: true,
@@ -29,8 +25,5 @@ module.exports = {
   output: {
     path: __dirname + '/app',
     filename: 'bundle.js'
-  },
-  plugins: [
-    new webpack.HotModuleReplacementPlugin()
-  ]
+  }
 }
