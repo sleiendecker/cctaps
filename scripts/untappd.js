@@ -56,7 +56,7 @@ var connectToDb = function(err, beerObject, lastUpdated, cb){
 }
 
 function getUrl(beerName, cb) {
-  // pass in beer's name to get url
+  console.log('getting beerName: ', beerName);
   ba.beerURL(beerName, function(url, err) {
     cb(null, url);
   });
@@ -110,7 +110,7 @@ function checkIfBarExists(bar, cb){
     collection.findOne({'name': bar.name}, function(err, dbBar){
       if(dbBar === null){
         bar = {name: bar.name, url: bar.url, lastUpdated: null, beers: []};
-        console.log('Couldn\'t find ', bar.name, '\nAdding to db');
+        console.log('\n\nCouldn\'t find ', bar.name, '\nAdding to db');
         collection.insert(bar);
       }else{
         collection.update({name: bar.name }, {$set: {beers: []}})
@@ -151,7 +151,7 @@ function getBeers(bar, cb){
     var $             = cheerio.load(body),
     beers             = $(bar.css),
     rawUpdated        = $('.pure-u-1-2 span').text();
-
+    bar.beers         = [],
     bar.lastUpdated   = parseDate(rawUpdated);
     $(beers).each(function(i, beer) {
       bar.beers.push($(beer).text().trim());
@@ -207,10 +207,10 @@ function beerWaterfall(bar, beer, lastUpdated, cb){
 
 var processBeers = function(callback){
   async.forEach(bars, function(bar, callback){
-    checkIfBarExists(bar, function(bar){
+    // checkIfBarExists(bar, function(bar){
       console.log('Found bar: ', bar);
       getBeers(bar, function(err, beers, lastUpdated) {
-        updateBarLastUpdated(bar, lastUpdated, function(bar){
+        // updateBarLastUpdated(bar, lastUpdated, function(bar){
           async.forEach(beers, function(beer, callback){
             beerWaterfall(bar, beer, lastUpdated, function(err, res){
               callback();
@@ -218,11 +218,9 @@ var processBeers = function(callback){
           }, function(err){
             callback();
           });
-        });
-      });
+        // });
+      // });
     })
-
-
   }, function(err){
     if (err){
       console.log('err: ' + err);
