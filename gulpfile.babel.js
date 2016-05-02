@@ -32,7 +32,7 @@ const paths = {
 gulp.task('build', cb => {
   run('clean-client', 'webpack', 'sass', cb);
 });
-gulp.task('deploy', shell.task([ 'forever start -c "node --harmony" src/server/index.js' ]));
+gulp.task('deploy', shell.task([ 'forever start -c "node" src/server/index.js' ]));
 gulp.task('stop', shell.task([ 'forever stopall' ]));
 
 /**
@@ -99,7 +99,7 @@ gulp.task('server', () => {
     script: paths.serverDest,
     ext: 'js',
     execMap: {
-      js: "node --harmony"
+      js: "node"
     },
     watch: ['./src/server']
   }).on('restart', () => {
