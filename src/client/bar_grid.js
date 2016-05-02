@@ -20,16 +20,30 @@ export default class BarGrid extends React.Component {
         });
     };
 
+    const metadata = [
+      {
+        columnName: 'name',
+        displayName: 'Name'
+      },
+      {
+        columnName: 'lastUpdated',
+        displayName: 'Last Updated'
+      }
+    ];
+
     return (
       <div id="barGrid">
         <h4>Which bar</h4>
         <Griddle
-          results={data}
-          showFilter={true}
+          columnMetadata={metadata}
           columns={['name', 'lastUpdated']}
+          filterPlaceholderText={'Search for bars (ex. Max\'s Taphouse): '}
           initialSort={'name'}
+          noDataMessage={'No bars found'}
           onRowClick={onRowClick}
+          results={data}
           resultsPerPage={100}
+          showFilter={true}
         />
       </div>
     );

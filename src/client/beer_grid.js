@@ -11,17 +11,43 @@ export default class BeerGrid extends React.Component {
       window.location = gridRow.props.data.url;
     };
 
+    const metadata = [
+      {
+        columnName: 'name',
+        displayName: 'Name'
+      },
+      {
+        columnName: 'rating',
+        displayName: 'Rating'
+      },
+      {
+        columnName: 'abv',
+        displayName: 'ABV'
+      },
+      {
+        columnName: 'style',
+        displayName: 'Style'
+      },
+      {
+        columnName: 'brewery',
+        displayName: 'Brewery'
+      }
+    ];
+
     return (
       <div id="beerGrid">
         <h4>{barTitle}</h4>
         <Griddle
-          results={beerData}
-          showFilter={true}
+          columnMetadata={metadata}
           columns={['name', 'rating', 'abv', 'style', 'brewery']}
+          filterPlaceholderText={'Search for beers'}
           initialSort={'rating'}
           initialSortAscending={false}
+          noDataMessage={'No beers found'}
           onRowClick={onRowClick}
+          results={beerData}
           resultsPerPage={100}
+          showFilter={true}
         />
       </div>
     );

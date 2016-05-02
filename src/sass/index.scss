@@ -6,10 +6,8 @@ body {
   tbody {
     tr {
       td:first-child {
-        span:last-child {
-          color: blue;
-          text-decoration: underline;
-        }
+        color: blue !important;
+        text-decoration: underline;
       }
     }
   }
