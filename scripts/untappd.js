@@ -126,6 +126,7 @@ function checkIfBarExists(bar, cb){
 var updateBarLastUpdated = function(bar, lastUpdated, cb){
   MongoClient.connect(MongoServer, function(err, db) {
     var collection = db.collection('bars');
+    console.log('Looking for bar: ', bar);
     collection.findOne({'name': bar.name}, function(err, dbBar){
       if (dbBar.lastUpdated === null){
         collection.update({name: bar.name }, {$set: {lastUpdated: lastUpdated}})
@@ -207,10 +208,10 @@ function beerWaterfall(bar, beer, lastUpdated, cb){
 
 var processBeers = function(callback){
   async.forEach(bars, function(bar, callback){
-    // checkIfBarExists(bar, function(bar){
+    checkIfBarExists(bar, function(bar){
       console.log('Found bar: ', bar);
       getBeers(bar, function(err, beers, lastUpdated) {
-        // updateBarLastUpdated(bar, lastUpdated, function(bar){
+        updateBarLastUpdated(bar, lastUpdated, function(bar){
           async.forEach(beers, function(beer, callback){
             beerWaterfall(bar, beer, lastUpdated, function(err, res){
               callback();
@@ -218,8 +219,8 @@ var processBeers = function(callback){
           }, function(err){
             callback();
           });
-        // });
-      // });
+        });
+      });
     })
   }, function(err){
     if (err){
