@@ -33,7 +33,6 @@ export default class BarGrid extends React.Component {
 
     return (
       <div id="barGrid">
-        <h4>Which bar</h4>
         <Griddle
           columnMetadata={metadata}
           columns={['name', 'lastUpdated']}

@@ -4,53 +4,65 @@
 body {
   background-color: rgba(#808080, 0.07);
 
-  .filter-container {
-    input {
-      font-family: 'Roboto', sans-serif;
-      background-color: transparent;
-      border: none;
-      border-bottom: 1px solid #757575;
-    }
-  }
+  #app-container {
+    padding: 20px;
 
-  thead {
-    tr {
-      th {
-        // background-color: rgba(#000, 0.1) !important;
-        background-color: transparent !important;
+    #barGrid {
+      box-shadow: 10px 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+
+      .griddle-filter {
+        width: 100% !important; //griddle override
       }
-      .sort-ascending {
-        background-color: rgba(#000, 0.05) !important;
+
+      .filter-container {
+        input {
+          font-family: 'Roboto', sans-serif;
+          background-color: transparent;
+          border: none;
+          border-bottom: 1px solid #757575;
+        }
       }
-      .sort-descending {
-        background-color: rgba(#000, 0.05) !important;
+
+      thead {
+        tr {
+          th {
+            // background-color: rgba(#000, 0.1) !important;
+            background-color: transparent !important;
+          }
+          .sort-ascending {
+            background-color: rgba(#000, 0.05) !important;
+          }
+          .sort-descending {
+            background-color: rgba(#000, 0.05) !important;
+          }
+        }
+      }
+
+      tbody {
+        font-family: 'Roboto', sans-serif;
+        tr {
+          td:first-child {
+            color: blue !important;
+            text-decoration: underline;
+          }
+        }
+        .standard-row {
+          border-bottom: 1px solid rgba(#000, 0.1);
+        }
+      }
+
+      h4 {
+        position: absolute;
+        right: 0;
+        margin-right: 10px;
+      }
+
+      .griddle-container {
+        border: none !important;
+      }
+      .griddle-footer {
+        display: none;
       }
     }
-  }
-
-  tbody {
-    font-family: 'Roboto', sans-serif;
-    tr {
-      td:first-child {
-        color: blue !important;
-        text-decoration: underline;
-      }
-    }
-    .standard-row {
-      border-bottom: 1px solid rgba(#000, 0.1);
-    }
-  }
-
-  h4 {
-    position: absolute;
-    right: 0;
-    margin-right: 10px;
-  }
-
-  .griddle-container {
-    border: none !important;
-  }
-  .griddle-footer {
-    display: none;
   }
 }
