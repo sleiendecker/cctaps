@@ -62,6 +62,27 @@ Start cctaps and go to localhost:3000 to see all the beers in your database.
 gulp
 ```
 
+# Server Instructions
+Add cronjob to update data in database
+```unix
+crontab -e
+0 12 * * * /usr/bin/node /[PROJECT_USER]/cctaps/scripts/untappd.js
+```
+
+Build the code
+```unix
+gulp build
+```
+
+Deploy project
+```unix
+gulp deploy
+```
+
+Kill server
+```unix
+gulp stop
+```
 
 ## Many Thanks
 * Untappd

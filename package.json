@@ -1,11 +1,14 @@
 {
   "name": "cctaps",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "private": true,
   "scripts": {
     "start": "gulp deploy",
     "build": "gulp build",
     "stop": "gulp stop"
+  },
+  "engines": {
+    "node": "6.0.0"
   },
   "babel": {
     "presets": [
