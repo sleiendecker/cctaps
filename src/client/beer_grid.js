@@ -35,8 +35,7 @@ export default class BeerGrid extends React.Component {
     ];
 
     return (
-      <div id="beerGrid">
-        <h4>{barTitle}</h4>
+      <div id="beerGrid" className="cctapsGrid">
         <Griddle
           columnMetadata={metadata}
           columns={['name', 'rating', 'abv', 'style', 'brewery']}
@@ -45,6 +44,8 @@ export default class BeerGrid extends React.Component {
           initialSortAscending={false}
           noDataMessage={'No beers found'}
           onRowClick={onRowClick}
+          settingsText={barTitle}
+          showSettings={true}
           results={beerData}
           resultsPerPage={100}
           showFilter={true}

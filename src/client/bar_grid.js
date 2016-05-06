@@ -31,14 +31,19 @@ export default class BarGrid extends React.Component {
       }
     ];
 
+    const neighborhood = 'Baltimore'; // @todo: make this a neighborhood
+
     return (
-      <div id="barGrid">
-        <h4 id="pageTitle">Baltimore</h4>
+      <div id="barGrid" className="cctapsGrid">
+      <h4 id="mainTitle">CCtaps</h4>
+      <h5 id="subTitle">Find the best beers in Charm City</h5>
         <Griddle
           columnMetadata={metadata}
           columns={['name', 'lastUpdated']}
           filterPlaceholderText={'bar search...'}
           initialSort={'name'}
+          settingsText={neighborhood}
+          showSettings={true}
           noDataMessage={'No bars found'}
           onRowClick={onRowClick}
           results={data}

@@ -1,5 +1,5 @@
 @import 'bootstrap/_bootstrap';
-@import url(https://fonts.googleapis.com/css?family=Roboto:100italic);
+// @import url(https://fonts.googleapis.com/css?family=Roboto:100italic);
 
 body {
   background-color: rgba(#808080, 0.07);
@@ -11,33 +11,41 @@ body {
       display: flex;
       flex-direction: column;
 
-      #mainTitle {
-        align-self: center;
-        margin-bottom: 0;
-      }
-
-      #subTitle {
-        align-self: center;
-        margin-bottom: 40px;
-        text-decoration: underline
-      }
-
-      #barGrid {
-        box-shadow: 10px 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
-
-        #pageTitle {
-          position: absolute;
-          left: 0;
-          margin-left: 25px;
+      .cctapsGrid {
+        #mainTitle {
+          align-self: center;
+          margin-bottom: 0;
         }
 
+        #subTitle {
+          align-self: center;
+          margin-bottom: 40px;
+          text-decoration: underline
+        }
+        box-shadow: 10px 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+
         .top-section {
-          width: 50% !important; //griddle override
+          display: flex !important;
           margin-bottom: 30px;
-          align-self: flex-end;
+          align-items: baseline;
+          flex-direction: row-reverse;
 
           .griddle-filter {
-            width: 100% !important;
+            width: 50% !important;
+          }
+
+          .griddle-settings-toggle {
+            width: 50%;
+            align-self: baseline;
+
+            .settings {
+              text-align: left;
+              margin-left: 10px !important;
+
+              span {
+                font-size: 20px;
+              }
+            }
           }
         }
 
@@ -66,6 +74,10 @@ body {
             td:first-child {
               color: blue !important;
               text-decoration: underline;
+            }
+
+            td {
+              overflow: hidden;
             }
           }
           .standard-row {

@@ -26,6 +26,12 @@ const paths = {
 };
 
 /**
+ * Scripting commands
+ */
+
+gulp.task('scrape', shell.task(['node scripts/untappd.js']));
+
+/**
  * Server commands
  */
 
