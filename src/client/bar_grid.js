@@ -33,10 +33,11 @@ export default class BarGrid extends React.Component {
 
     return (
       <div id="barGrid">
+        <h4 id="pageTitle">Baltimore</h4>
         <Griddle
           columnMetadata={metadata}
           columns={['name', 'lastUpdated']}
-          filterPlaceholderText={'Search for bars (ex. Max\'s Taphouse): '}
+          filterPlaceholderText={'bar search...'}
           initialSort={'name'}
           noDataMessage={'No bars found'}
           onRowClick={onRowClick}
