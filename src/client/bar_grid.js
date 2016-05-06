@@ -35,8 +35,6 @@ export default class BarGrid extends React.Component {
 
     return (
       <div id="barGrid" className="cctapsGrid">
-      <h4 id="mainTitle">CCtaps</h4>
-      <h5 id="subTitle">Find the best beers in Charm City</h5>
         <Griddle
           columnMetadata={metadata}
           columns={['name', 'lastUpdated']}

@@ -11,17 +11,18 @@ body {
       display: flex;
       flex-direction: column;
 
-      .cctapsGrid {
-        #mainTitle {
-          align-self: center;
-          margin-bottom: 0;
-        }
+      #mainTitle {
+        align-self: center;
+        margin-bottom: 0;
+      }
 
-        #subTitle {
-          align-self: center;
-          margin-bottom: 40px;
-          text-decoration: underline
-        }
+      #subTitle {
+        align-self: center;
+        margin-bottom: 40px;
+        text-decoration: underline
+      }
+
+      .cctapsGrid {
         box-shadow: 10px 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
 
         .top-section {
