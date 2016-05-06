@@ -1,24 +1,83 @@
 @import 'bootstrap/_bootstrap';
+@import url(https://fonts.googleapis.com/css?family=Roboto:100italic);
 
 body {
-  background-color: #80AA55;
+  background-color: rgba(#808080, 0.07);
 
-  tbody {
-    tr {
-      td:first-child {
-        color: blue !important;
-        text-decoration: underline;
+  #app-container {
+    padding: 20px;
+
+    div {
+      display: flex;
+      flex-direction: column;
+
+      #mainTitle {
+        align-self: center;
+        margin-bottom: 0;
+      }
+
+      #subTitle {
+        align-self: center;
+      }
+
+      #barGrid {
+        box-shadow: 10px 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+
+        #pageTitle {
+          position: absolute;
+          left: 0;
+          margin-left: 25px;
+        }
+
+        .top-section {
+          width: 50% !important; //griddle override
+          margin-bottom: 30px;
+          align-self: flex-end;
+
+          .griddle-filter {
+            width: 100% !important;
+          }
+        }
+
+        .filter-container {
+          input {
+            font-family: 'Roboto', sans-serif;
+            background-color: transparent;
+            border: none;
+            border-bottom: 1px solid #757575;
+          }
+        }
+
+        thead {
+          tr {
+            th {
+              background-color: transparent !important;
+              font-family: 'Roboto', sans-serif;
+              color: grey !important;
+            }
+          }
+        }
+
+        tbody {
+          font-family: 'Roboto', sans-serif;
+          tr {
+            td:first-child {
+              color: blue !important;
+              text-decoration: underline;
+            }
+          }
+          .standard-row {
+            border-bottom: 1px solid rgba(#000, 0.1);
+          }
+        }
+
+        .griddle-container {
+          border: none !important;
+        }
+        .griddle-footer {
+          display: none;
+        }
       }
     }
-  }
-
-  h4 {
-    position: absolute;
-    right: 0;
-    margin-right: 10px;
-  }
-
-  .griddle-footer {
-    display: none;
   }
 }
