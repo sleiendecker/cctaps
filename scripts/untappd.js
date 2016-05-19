@@ -128,9 +128,10 @@ var updateBarLastUpdated = function(bar, lastUpdated, cb){
   MongoClient.connect(MongoServer, function(err, db) {
     var collection = db.collection('bars');
     collection.findOne({'name': bar.name}, function(err, dbBar){
-      if (dbBar.lastUpdated === null){
+      console.log('dbBar: ' + dbBar);
+      // if (dbBar.lastUpdated === null || ){
         collection.update({name: bar.name }, {$set: {lastUpdated: lastUpdated}})
-      }
+      // }
       db.close();
       cb(bar);
     });
