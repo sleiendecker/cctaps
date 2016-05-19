@@ -1,11 +1,19 @@
-import React from 'react';
 import ReactDOM from 'react-dom';
-import Griddle from 'griddle-react';
-import axios from 'axios';
+import React    from 'react';
+import Griddle  from 'griddle-react';
+import moment   from 'moment';
+import axios    from 'axios';
 
 export default class BarGrid extends React.Component {
   render () {
     const data =  window.__INITIAL__STATE__.bars;
+    data.forEach((bar) => {
+      if (bar.lastUpdated) {
+        bar.lastUpdated = moment(new Date(bar.lastUpdated)).startOf('day').fromNow();
+      } else {
+        bar.lastUpdated = 'N/A';
+      }
+    });
 
     const onRowClick = (gridRow, event) => {
       axios.get(`/api/${gridRow.props.data._id}`)
