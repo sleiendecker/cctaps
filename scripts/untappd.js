@@ -1,4 +1,4 @@
-'use strict';
+// 'use strict';
 
 // Mongo Imports
 var MongoClient = require('mongodb').MongoClient;
@@ -17,31 +17,23 @@ var ba  = require('./ba_api.js');
 
 
 var addToCollection = function(collection, object, cb){
-  console.log('Adding object: ', object);
-  if (object.rating === '-'){
-    console.log('No rating')
-  }
   var mongoOpts = {
     set: {$set : object},
     upsert: { upsert: true}
   }
   // Update if the query returns an object with a url property (a beer)
-  if (object.hasOwnProperty('url')){
-    collection.update( {url: object.url}, mongoOpts.set, mongoOpts.upsert)
-  }
+  collection.update( {name: object.name}, mongoOpts.set, mongoOpts.upsert)
   cb(object._id);
 }
 
 var addBeerToBar = function(collection, id){
-    collection.update( {url: object.url}, mongoOpts.set, mongoOpts.upsert)
+    collection.update( {name: object.name}, mongoOpts.set, mongoOpts.upsert)
 }
 
 var connectToDb = function(err, beerObject, lastUpdated, cb){
-  if (err) {
-    console.log('Unable to add to collection');
-  }else{
+  if (!err) {
     MongoClient.connect(MongoServer, function(err, db) {
-      if(!err) {
+      if (!err) {
         var collection = db.collection('beers');
         // Add beerObject to db
         addToCollection(collection, beerObject, function(id){
@@ -56,7 +48,6 @@ var connectToDb = function(err, beerObject, lastUpdated, cb){
 }
 
 function getUrl(beerName, cb) {
-  console.log('getting beerName: ', beerName);
   ba.beerURL(beerName, function(url, err) {
     cb(null, url);
   });
@@ -66,6 +57,7 @@ function getInfo(url, cb){
   ba.beerPage(url, function(beerInfo) {
     // pass in beer's url to get info
     beerInfo = JSON.parse(beerInfo);
+    console.log('Found info: ', beerInfo);
     cb(null, beerInfo);
   });
 }
@@ -79,13 +71,20 @@ function formatRating(rating){
 }
 
 function formatAbv(abv){
-  console.log('formatting ABV: ', abv);
   if (abv === null){
     return null
   } else {
-    // return parseFloat(abv.replace('| ','')) + '%'
     return abv + '%'
   }
+}
+
+function evalNull(query, rating = false){
+  if (query === null) {
+    query = null;
+  } else if (rating) {
+    query = Math.floor( query * 20 + 10 )
+  }
+  return query;
 }
 
 function buildObject(beer, bar, url, cb){
@@ -94,12 +93,13 @@ function buildObject(beer, bar, url, cb){
     // Create ObjectID to be added to its bar
     _id: new ObjectID,
     bar : bar,
-    brewery : beer.brewery_name,
-    name : beer.beer_name,
-    abv : formatAbv(beer.beer_abv),
-    rating: formatRating(beer.rAvg),
-    style : beer.beer_style,
-    url: ratingUrl + url
+    brewery : beer.brewery_name ? beer.brewery_name : null,
+    brewery : beer.brewery_name ? beer.brewery_name: null,
+    name : beer.beer_name ? beer.beer_name: null,
+    abv : beer.beer_abv ? beer.beer_abv + '%' : null,
+    rating: beer.rAvg ? Math.floor( beer.rAvg * 20 + 10 ): null,
+    style : beer.beer_style ? beer.beer_style: null,
+    url: url ? ratingUrl + url : '/'
   }
   cb(null, dbBeer)
 }
@@ -107,13 +107,14 @@ function buildObject(beer, bar, url, cb){
 function checkIfBarExists(bar, cb){
   MongoClient.connect(MongoServer, function(err, db) {
     var collection = db.collection("bars");
+    collection.remove({});
     collection.findOne({'name': bar.name}, function(err, dbBar){
       if(dbBar === null){
-        bar = {name: bar.name, url: bar.url, lastUpdated: null, beers: []};
-        console.log('\n\nCouldn\'t find ', bar.name, '\nAdding to db');
+        // bar = {name: bar.name, url: bar.url, lastUpdated: null, beers: []};
         collection.insert(bar);
       }else{
-        collection.update({name: bar.name }, {$set: {beers: []}})
+        // collection.remove({});
+        collection.update({name: bar.name }, {$set: {beers: []}});
       }
       bar.beers = [];
       db.close();
@@ -126,7 +127,6 @@ function checkIfBarExists(bar, cb){
 var updateBarLastUpdated = function(bar, lastUpdated, cb){
   MongoClient.connect(MongoServer, function(err, db) {
     var collection = db.collection('bars');
-    console.log('Looking for bar: ', bar);
     collection.findOne({'name': bar.name}, function(err, dbBar){
       if (dbBar.lastUpdated === null){
         collection.update({name: bar.name }, {$set: {lastUpdated: lastUpdated}})
@@ -147,7 +147,7 @@ function parseDate(date){
  * array of beer strings.
  */
 function getBeers(bar, cb){
-  console.log('getting beers for bar: ' + bar.name);
+  console.log('Getting beers for ', bar.name);
   request(bar.url, function (err, res, body) {
     var $             = cheerio.load(body),
     beers             = $(bar.css),
@@ -164,17 +164,14 @@ function getBeers(bar, cb){
   };
 
 function buildMissingBeerObject(beer){
-  console.log('Building object for : ', beer);
   var obj = [{
-      // Create ObjectID to be added to its bar
+    // Create ObjectID to be added to its bar
       brewery_name : null,
       beer_name : beer,
       beer_abv : null,
       rAvg: null,
       beer_style : null
     }]
-  console.log('returning object: ', obj);
-  console.log('\n\nreturning brewery_name: ', obj.brewery_name);
   return obj;
 }
 
@@ -186,14 +183,14 @@ function beerWaterfall(bar, beer, lastUpdated, cb){
       });
     },
     function(url, callback){
-      if (url === beer){
-        callback(null, buildMissingBeerObject(url), null);
-      } else{
+      if (url === beer) {
+        var missingBeer = buildMissingBeerObject(beer);
+        callback(null, missingBeer, null);
+      } else {
         getInfo(url, function(err, beerInfo){
           callback(err, beerInfo, url);
         });
       }
-
     },
     function(beerInfo, url, callback){
       buildObject(beerInfo, bar.name, url, function (err, dbBeer) {
@@ -209,7 +206,6 @@ function beerWaterfall(bar, beer, lastUpdated, cb){
 var processBeers = function(callback){
   async.forEach(bars, function(bar, callback){
     checkIfBarExists(bar, function(bar){
-      console.log('Found bar: ', bar);
       getBeers(bar, function(err, beers, lastUpdated) {
         updateBarLastUpdated(bar, lastUpdated, function(bar){
           async.forEach(beers, function(beer, callback){
@@ -230,5 +226,5 @@ var processBeers = function(callback){
 }
 
 processBeers(function(err, beers){
-  console.log('Beers ', beers);
+  console.log('Getting beers: ', beers);
 });
